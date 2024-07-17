@@ -1,0 +1,8 @@
+---
+title: "Home"
+---
+
+
+# Welcome to Your Project
+
+This is the homepage of your Quarto project.

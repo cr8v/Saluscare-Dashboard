@@ -1,0 +1,12 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "SALUS Dashboard"
+  description: "Overview of Dataset"
+  navbar:
+     title: "Home"
+     href: index.qmd
+  #   - title: "About"
+  #     href: about.qmd

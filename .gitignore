@@ -1,0 +1,27 @@
+# Quarto project ignores
+*.html
+*.pdf
+*.docx
+*.log
+*.aux
+*.out
+*.toc
+
+# Data files
+data/
+*.csv
+*.tsv
+*.json
+
+# R/RStudio specific ignores
+.Rhistory
+.RData
+.Rproj.user/
+
+# Python specific ignores
+__pycache__/
+*.py[cod]
+*.ipynb_checkpoints
+
+# Jupyter Notebook specific ignores
+*.ipynb
