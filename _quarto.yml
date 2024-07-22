@@ -1,0 +1,14 @@
+project:
+  type: website
+  output-dir: docs
+
+format:
+  dashboard:
+    theme: cosmo
+
+website:
+  title: "Saluscare Dashboard"
+  navbar:
+    left:
+      - href: dashboard.qmd
+        text: Home
