@@ -1,8 +1,28 @@
 ---
-title: "Home"
+title: "Saluscare Dashboard"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+execute:
+  echo: false
+editor: visual
 ---
 
+```{r setup, include=FALSE}
+library(tidyverse)
+library(data.table)
+library(reactable)
+library(bslib)
+library(shiny)
+list_column <- readRDS("/home/rstudio/Data/object/list_column.rds")
+```
 
-# Welcome to Your Project
+```{r}
+f_style1 <- function(value) { if ((value %% 64 == 0) & (value != 0)) { list(fontWeight = "bold") } else if (value != 0) { list() } else { list() } }
 
-This is the homepage of your Quarto project.
+f_style2 <- function(value) { if (value == 64) { list(color = "green", fontWeight = "bold") } else if (value != 0) { list(color = "red") } else { list() } }
+
+f_reactable <- function(x){ reactable(x, filterable = TRUE, sortable = TRUE) }
+```

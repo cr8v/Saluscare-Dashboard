@@ -3,10 +3,13 @@ project:
   output-dir: docs
 
 website:
-  title: "SALUS Dashboard"
-  description: "Overview of Dataset"
+  title: "Saluscare Dashboard"
   navbar:
-     title: "Home"
-     href: index.qmd
-  #   - title: "About"
-  #     href: about.qmd
+    left:
+      - href: index.qmd
+        text: Home
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css

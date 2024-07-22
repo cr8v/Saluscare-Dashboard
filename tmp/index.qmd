@@ -1,0 +1,113 @@
+---
+title: "Saluscare"
+format:
+  dashboard:
+    scrolling: true
+execute: 
+  echo: false
+editor: visual
+---
+
+```{r}
+source("script/library.R")
+```
+
+# Overview
+
+## Row
+
+### Column
+
+::: {.valuebox icon="pencil" color="primary"}
+Total Participants
+:::
+
+### Column
+
+::: {.valuebox icon="pencil" color="secondary"}
+Total Images
+:::
+
+### Column
+
+::: {.valuebox icon="pencil" color="success"}
+Articles per day
+:::
+
+# Table
+
+```{r}
+reactable::reactable(mtcars) # reactable
+```
+
+# About
+
+## Row
+
+::: card
+Card 1
+:::
+
+## Row
+
+### Column
+
+::: card
+Card 2-1
+:::
+
+### Column
+
+::: card
+Card 2-2
+:::
+
+# Participants
+
+::: {.card} This text will be displayed within a card
+
+-   `title`: 카드의 제목
+
+-   `expandable`: 카드를 접을 수 있을지의 여부
+
+-   `output`: 결과를 출력할지 여부
+
+-   `layout-ncol`: 카드 내용을 구분할 column의 개수 (`layout-nrow`)
+
+```{r}
+#| echo: false
+library(ggplot2)
+```
+
+```{r}
+#| title: "Card 1"
+#| layout-ncol: 2
+mtcars |> 
+  ggplot(aes(x = mpg, y = wt)) + 
+  geom_point()
+
+mtcars |> 
+  ggplot(aes(x = mpg, y = qsec)) + 
+  geom_point()
+```
+
+```{r}
+#| title: "Card 2"
+#| output: false
+mtcars |> 
+  ggplot(aes(x = mpg, y = vs)) + 
+  geom_point()
+```
+
+```{r}
+#| title: "Card 3"
+#| expandable: false
+mtcars |> 
+  ggplot(aes(x = mpg, y = vs)) + 
+  geom_point()
+```
+
+
+<!-- #  {.sidebar} -->
+
+<!-- Sidebar content -->

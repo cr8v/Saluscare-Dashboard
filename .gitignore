@@ -25,3 +25,5 @@ __pycache__/
 
 # Jupyter Notebook specific ignores
 *.ipynb
+
+/.quarto/
