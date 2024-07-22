@@ -64,3 +64,5 @@ tabset_content <- tabsetPanel(
 card(tabset_content)
 
 ```
+
+# TABLE
