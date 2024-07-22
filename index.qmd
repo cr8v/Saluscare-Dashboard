@@ -2,9 +2,10 @@
 title: "Saluscare Dashboard"
 format:
   html:
-    theme: cosmo
+    #theme: cosmo
     toc: true
     toc-depth: 2
+    scrolling: true
 execute:
   echo: false
 editor: visual
@@ -15,14 +16,50 @@ library(tidyverse)
 library(data.table)
 library(reactable)
 library(bslib)
+library(htmltools)
 library(shiny)
-list_column <- readRDS("/home/rstudio/Data/object/list_column.rds")
-```
 
-```{r}
 f_style1 <- function(value) { if ((value %% 64 == 0) & (value != 0)) { list(fontWeight = "bold") } else if (value != 0) { list() } else { list() } }
 
 f_style2 <- function(value) { if (value == 64) { list(color = "green", fontWeight = "bold") } else if (value != 0) { list(color = "red") } else { list() } }
 
 f_reactable <- function(x){ reactable(x, filterable = TRUE, sortable = TRUE) }
+
+list_column <- readRDS("/home/rstudio/Data/object/list_column.rds")
+```
+
+# Data Overview
+
+```{r list_colum$layout}
+#| title: 데이터 항목
+reactable(
+  list_column$layout %>% select(COLUMN, 비고, AINQ:RSLT, starts_with("N_")),
+  filterable = TRUE, sortable = TRUE,
+  columns = list(
+    N_ALL  = colDef(style = f_style1),
+    N_AINQ = colDef(style = f_style2),
+    N_JUDD = colDef(style = f_style2),
+    N_RSLT = colDef(style = f_style2),
+    COLUMN = colDef(name = "Column"),
+    비고   = colDef(name = "비고"),
+    AINQ   = colDef(name = "AINQ"),
+    JUDD   = colDef(name = "JUDD"),
+    RSLT   = colDef(name = "RSLT")
+  )
+)
+```
+
+# Codebook
+
+```{r list_column$codebook}
+#| title: 코드북
+df <- list_column$codebook
+
+tabsetPanel(
+  tabPanel(names(df[[2]])[1], f_reactable(df[[2]] %>% select(HEALEXAMDETLFLAG, DETLDESC))),
+  tabPanel(names(df[[3]])[1], f_reactable(df[[3]] %>% select(TESTCD, TESTNM, LRFLAG, everything()))),
+  tabPanel(names(df[[4]])[1], f_reactable(df[[4]] %>% select(PRCPCD, PRCPNM, FROMDD, TODD, everything()))),
+  tabPanel(names(df[[5]])[1], f_reactable(df[[5]] %>% select(INQRFLAG, CDNAME, FROMDD, TODD, everything())))
+)
+
 ```
