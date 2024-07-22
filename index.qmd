@@ -1,11 +1,9 @@
 ---
 title: "Saluscare Dashboard"
 format:
-  html:
-    #theme: cosmo
-    toc: true
-    toc-depth: 2
+  dashboard:
     scrolling: true
+    theme: cosmo
 execute:
   echo: false
 editor: visual
@@ -19,10 +17,6 @@ library(bslib)
 library(htmltools)
 library(shiny)
 
-f_style1 <- function(value) { if ((value %% 64 == 0) & (value != 0)) { list(fontWeight = "bold") } else if (value != 0) { list() } else { list() } }
-
-f_style2 <- function(value) { if (value == 64) { list(color = "green", fontWeight = "bold") } else if (value != 0) { list(color = "red") } else { list() } }
-
 f_reactable <- function(x){ reactable(x, filterable = TRUE, sortable = TRUE) }
 
 list_column <- readRDS("/home/rstudio/Data/object/list_column.rds")
@@ -30,8 +24,15 @@ list_column <- readRDS("/home/rstudio/Data/object/list_column.rds")
 
 # Data Overview
 
+## Column
+
 ```{r list_colum$layout}
-#| title: 데이터 항목
+#| title: 데이터 종류별 변수
+
+f_style1 <- function(value) { if ((value %% 64 == 0) & (value != 0)) { list(fontWeight = "bold") } else if (value != 0) { list() } else { list() } }
+
+f_style2 <- function(value) { if (value == 64) { list(color = "green", fontWeight = "bold") } else if (value != 0) { list(color = "red") } else { list() } }
+
 reactable(
   list_column$layout %>% select(COLUMN, 비고, AINQ:RSLT, starts_with("N_")),
   filterable = TRUE, sortable = TRUE,
@@ -49,17 +50,17 @@ reactable(
 )
 ```
 
-# Codebook
-
 ```{r list_column$codebook}
 #| title: 코드북
 df <- list_column$codebook
 
-tabsetPanel(
+tabset_content <- tabsetPanel(
   tabPanel(names(df[[2]])[1], f_reactable(df[[2]] %>% select(HEALEXAMDETLFLAG, DETLDESC))),
   tabPanel(names(df[[3]])[1], f_reactable(df[[3]] %>% select(TESTCD, TESTNM, LRFLAG, everything()))),
   tabPanel(names(df[[4]])[1], f_reactable(df[[4]] %>% select(PRCPCD, PRCPNM, FROMDD, TODD, everything()))),
   tabPanel(names(df[[5]])[1], f_reactable(df[[5]] %>% select(INQRFLAG, CDNAME, FROMDD, TODD, everything())))
 )
+
+card(tabset_content)
 
 ```

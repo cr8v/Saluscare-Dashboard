@@ -7,9 +7,9 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: Overview
 
 format:
-  html:
+  dashboard:
     theme: cosmo
     css: styles.css
