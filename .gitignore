@@ -1,5 +1,4 @@
 # Quarto project ignores
-*.html
 *.pdf
 *.docx
 *.log
@@ -27,3 +26,4 @@ __pycache__/
 *.ipynb
 
 /.quarto/
+.DS_Store
