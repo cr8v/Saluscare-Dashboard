@@ -1,0 +1,9 @@
+---
+format: dashboard
+---
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.getElementById('nav-risk-analysis').classList.add('active');
+});
+</script>

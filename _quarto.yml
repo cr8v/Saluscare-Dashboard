@@ -5,10 +5,63 @@ project:
 format:
   dashboard:
     theme: cosmo
+    css: styles.css
+    nav-buttons:
+      - icon: github
+        href: https://github.com/cr8v/saluscare-dashboard
 
 website:
   title: "Saluscare Dashboard"
   navbar:
+    background: primary
+    search: true
     left:
-      - href: dashboard.qmd
-        text: Home
+      - text: Overview
+        file: index.qmd
+        id: "nav-index"
+      - text: Codebook
+        file: codebook.qmd
+        id: "nav-codebook"
+      - text: About Data
+        file: data_overview.qmd
+        id: "nav-data-overview"        
+      - text: Descriptive Stats
+        file: descriptive_stats.qmd
+        id: "nav-descriptive-stats"
+      - text: Trend Analysis
+        file: trend_analysis.qmd
+        id: "nav-trend-analysis"
+      - text: Segmentation
+        file: segmentation.qmd
+        id: "nav-segmentation"
+      - text: Risk Analysis
+        file: risk_analysis.qmd
+        id: "nav-risk-analysis"
+      - text: Predictive Models
+        file: predictive_models.qmd
+        id: "nav-predictive-models"
+      - text: Recommendations
+        file: recommendations.qmd
+        id: "nav-recommendations"
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - section: "데이터 분석"
+        contents:
+          - data_overview.qmd
+          - descriptive_stats.qmd
+          - trend_analysis.qmd
+      - section: "고급 분석"
+        contents:
+          - segmentation.qmd
+          - risk_analysis.qmd
+          - predictive_models.qmd
+      - recommendations.qmd
+
+  page-footer:
+    left: "Copyright 2024, Saluscare"
+    right:
+      - icon: github
+        href: https://github.com/cr8v/saluscare-dashboard
+

@@ -1,0 +1,263 @@
+---
+format: dashboard
+---
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.getElementById('nav-codebook').classList.add('active');
+});
+</script>
+
+```{r setup, include=FALSE}
+source("library.R")
+```
+
+```{r data, include=FALSE}
+list_column <- readRDS("/home/rstudio/Data/object/list_column.rds")
+```
+
+
+# 기본
+
+```{r data-2}
+df_codebook <- list_column$codebook
+```
+
+## Row
+
+::: {.panel-tabset}
+
+### 건진상세
+
+```{r reactable-2-1} 
+df_codebook[[2]] %>% 
+  select(HEALEXAMDETLFLAG, DETLDESC) %>%
+  f_reactable(columns = 
+                list(HEALEXAMDETLFLAG = colDef(style = f_style_sticky, sticky = "left", minWidth = 150, maxWidth = 200,
+                                               html = TRUE, header = JS(f_header("건진상세"))),
+                     DETLDESC = colDef(align= "left", maxWidth = 300,
+                                       html = TRUE, header = JS(f_header("세부설명"))
+                                       )
+                     ),
+              defaultSelected = c(1),
+              pagination = FALSE,
+              compact = TRUE,
+              width = 500
+              )
+```
+
+### 질병코드
+
+```{r}
+df_codebook[[8]] %>%
+  mutate(
+    SICKCD = toupper(SICKCD),
+    SICKCD_Subgroup = str_sub(SICKCD, 1, 1),
+    SICKCD_Subgroup2 = str_sub(SICKCD, 2, 2),
+    TODD = as.integer(TODD),
+    FROMDD = as.integer(FROMDD)
+    ) %>%
+  mutate(
+    SICKCD_Subgroup2 = case_when(str_detect(SICKCD_Subgroup, "^\\d") ~ paste0(SICKCD_Subgroup, SICKCD_Subgroup2, "0+"),
+                                 str_detect(SICKCD_Subgroup, "^[A-Z]") ~ paste0(SICKCD_Subgroup, SICKCD_Subgroup2)),
+    SICKCD_Group = factor(case_when(str_detect(SICKCD_Subgroup, "^\\d") ~ "1-9",
+                             str_detect(SICKCD_Subgroup, "^[A-Z]") ~ "A-Z",
+                             TRUE ~ "Others"), levels = c("A-Z","1-9","Others"))) %>%
+  mutate(
+    SICKCD_Subgroup = case_when(
+      str_detect(SICKCD_Subgroup, "^\\d") ~ paste0(SICKCD_Subgroup, "00+"),
+      TRUE ~ .$SICKCD_Subgroup)
+    ) %>% 
+  arrange(SICKCD_Group, SICKCD_Subgroup, SICKCD_Subgroup2, SICKCD) %>% 
+f_reactable(
+  columnGroups = list(colGroup("GROUP", columns = c("SICKCD_Group", "SICKCD_Subgroup","SICKCD_Subgroup2"), sticky = "left")),
+  columns = list(
+      SICKCD = colDef(name = "SICKCD", maxWidth = 100 , align = "left", style = f_style_sticky),
+      SICKCD_Group = colDef(name = "1st", align = "left", maxWidth = 120),
+      SICKCD_Subgroup = colDef(name = "2nd", align = "left", maxWidth = 100),
+      SICKCD_Subgroup2 = colDef(name = "3rd", align = "left", maxWidth = 100),
+      FROMDD = colDef(maxWidth = 120),
+      TODD = colDef(maxWidth = 120, align = "left"),
+      CDNAME = colDef(align = "left", aggregate = "unique", maxWidth = 1000)
+    ),
+  groupBy = c("SICKCD_Group", "SICKCD_Subgroup", "SICKCD_Subgroup2"),
+  pagination = FALSE,
+  compact = TRUE,
+  wrap = FALSE,
+  width = "100%"
+  )
+```
+
+### 처방코드
+
+```{r}
+df_codebook[[4]] %>% mutate(PRCPCD_Group = factor(case_when(str_detect(PRCPCD, "^\\d") ~ "0-9",
+                                                            str_detect(PRCPCD, "^[A-Z|a-z]") ~ "A-Z",
+                                                     TRUE ~ "Others"), levels = c("A-Z","0-9","Others")),
+                            PRCPCD_Group2 = str_extract(PRCPCD, "^[A-Z0-9]"),
+                            PRCPCD_Group3 = case_when(PRCPCD_Group == "A-Z" ~ str_extract(PRCPCD, "^[A-Za-z]+"),
+                                                      PRCPCD_Group == "0-9" ~ substr(PRCPCD, 1,2)
+                                                      )
+                            ) %>% 
+  select(PRCPCD, FROMDD, TODD, PRCPNM, everything()) %>%
+  arrange(desc(nchar(PRCPCD_Group3)), PRCPCD_Group, PRCPCD) %>%
+  f_reactable(
+    columns = list(PRCPCD_Group  = colDef(name = "1st", align = "left", maxWidth = 100),
+                   PRCPCD_Group2 = colDef(name = "2nd", align = "left", maxWidth = 100),
+                   PRCPCD_Group3 = colDef(name = "3rd", align = "left", minWidth = 130),
+                   PRCPCD = colDef(style = f_style_sticky, sticky = "left", align = "left", minWidth = 130),
+                   PRCPNM = colDef(align = "left", minWidth = 300, aggregate = "unique", maxWidth = 1000),
+                   FROMDD = colDef(minWidth = 120, maxWidth = 200),
+                   TODD = colDef(minWidth = 120, maxWidth = 200, align = "left")
+                   ),
+    columnGroups = list(colGroup("GROUP", columns = c("PRCPCD_Group", "PRCPCD_Group2","PRCPCD_Group3"), sticky = "left")),
+    groupBy = c("PRCPCD_Group", "PRCPCD_Group2", "PRCPCD_Group3"),
+    pagination = FALSE,
+    compact = TRUE,
+    wrap = FALSE
+    )
+```
+
+### 검사코드
+
+```{r reactable-2-2}
+df_codebook[[3]] %>% 
+  mutate(TESTCD_Group = str_extract(TESTCD, "^[A-Z]"),
+         TESTCD_Group2 = str_extract(TESTCD, "^[A-Z]+")) %>%
+  select(TESTCD, TESTNM, ends_with("YN"), everything()) %>%
+  arrange(TESTCD_Group, TESTCD) %>%
+  f_reactable(
+    columns = list(TESTCD_Group  = colDef(name = "1st", align = "left"),
+                   TESTCD_Group2 = colDef(name = "2nd", align = "left"),
+                   TESTCD = colDef(style = f_style_bold, sticky = "left", align = "left"),
+                   TESTNM = colDef(style = f_style_sticky, sticky = "left", align = "left", aggregate = "unique", minWidth = 500, maxWidth = 1000),
+                   USEYN = colDef(sticky = "left")
+                   ),
+    columnGroups = list(colGroup("Group", columns = c("TESTCD_Group","TESTCD_Group2"), sticky = "left"),
+                        colGroup("TEST", columns = c("TESTCD", "TESTNM"), sticky = "left"),
+                        colGroup("YN", columns = c("JNOYN","YDPYN","GNMYN","SWNYN","TAEYN","PUSYN","KWJYN","JEJYN")),
+                        colGroup("FLAG", columns = c("LRFLAG","SEXFLAG"), sticky = "right")
+                        ),
+    groupBy = c("TESTCD_Group","TESTCD_Group2"),
+    pagination = FALSE,
+    compact = TRUE, wrap = FALSE
+    )
+
+```
+
+:::
+
+# 문진
+## Row
+
+::: {.panel-tabset}
+
+### 문진분류
+
+```{r}
+df_codebook[[5]] %>% select(INQRFLAG, CDNAME, FROMDD, TODD, everything()) %>%
+  f_reactable(columns = list(INQRFLAG = colDef(style = f_style_sticky)
+                             ),
+              pagination = FALSE
+            )
+```
+
+### 문진코드
+
+```{r}
+df_codebook[[6]] %>% 
+  arrange(APPYEAR, HEALEXAMFLAG, INQRFLAG, INQRCD) %>%
+  f_reactable(
+    columns = list(HEALEXAMFLAG = colDef(align = "left"),
+                   INQRFLAG = colDef(align = "left"),
+                   APPYEAR = colDef(align = "left", defaultSortOrder = "desc", aggregate = "unique"),
+                   INQRCD = colDef(align = "left"),
+                   INQRNM = colDef(align = "left")
+                   ),
+    groupBy = c("HEALEXAMFLAG","INQRFLAG","APPYEAR"),
+    defaultSorted = c("HEALEXAMFLAG","INQRFLAG","APPYEAR","INQRCD"),
+    wrap = FALSE
+    )
+```
+
+### 문진결과
+
+```{r}
+df_codebook[[7]] %>%
+  f_reactable(
+    columns = list(
+      APPYEAR = colDef(align="left", defaultSortOrder = "desc"),
+      HEALEXAMFLAG = colDef(align="left"),
+      INQRFLAG = colDef(align="left"),
+      INQRCD = colDef(align="left"),
+      INQRRSLT = colDef(aggregate = "unique"),
+      ANSWNM = colDef(aggregate = "unique")
+    ),
+    groupBy = c("APPYEAR","HEALEXAMFLAG","INQRFLAG","INQRCD"),
+    defaultSorted = c("APPYEAR","HEALEXAMFLAG","INQRFLAG","INQRCD","INQRRSLT"),
+    wrap = FALSE
+  )
+```
+
+:::
+
+# 판정
+
+## Row
+
+::: {.panel-tabset}
+
+### 판정결과 상세코드
+
+```{r}
+###############################################################
+#######TODO : 그룹 레벨 맞추기@!@!!! #######################
+###############################################################
+
+df_codebook[[9]] %>% 
+  mutate(TODD_Group = case_when(grepl("9999",TODD)~"Current",
+                   TRUE ~ "Before")) %>%
+  mutate(JUDGRSLTCD1_Group = str_extract(JUDGRSLTCD1, "^[A-Z]+"),
+         JUDGRSLTCD1_Group3 = str_remove(JUDGRSLTCD1, "^[A-Z]+")
+         ) %>%
+  mutate(JUDGRSLTCD1_Group = case_when(is.na(JUDGRSLTCD1_Group)~"", TRUE ~ .$JUDGRSLTCD1_Group),
+         JUDGRSLTCD1_Group2 = paste0(JUDGRSLTCD1_Group,substr(JUDGRSLTCD1_Group3, 1,1)),
+         JUDGRSLTCD1_Group3 = str_remove(JUDGRSLTCD1_Group3, "^[0-9]")
+         ) %>% 
+  select(contains("_Group"), JUDGRSLTCD1, everything()) %>%
+  arrange(JUDGRSLTCD1) %>%
+  f_reactable(
+    columns = list(
+      JUDGRSLTCD1_Group = colDef(name= "1st", align = "left"),
+      JUDGRSLTCD1_Group2 = colDef(name= "2nd", align = "left"),
+      JUDGRSLTCD1_Group3 = colDef(name= "3rd", align = "left"),
+      JUDGRSLTCD1 = colDef(align = "left"),
+      CDNAME = colDef(align = "left", aggregate = "unique")
+    ),
+    columnGroups = list(
+      colGroup("Group", columns = c("TODD_Group", "JUDGRSLTCD1_Group","JUDGRSLTCD1_Group2","JUDGRSLTCD1_Group3"), sticky = "left")
+      
+    ),
+    groupBy = c("TODD_Group", "JUDGRSLTCD1_Group","JUDGRSLTCD1_Group2","JUDGRSLTCD1_Group3"),
+    compact = TRUE, wrap = FALSE,
+    height = 500
+  )
+
+```
+
+### 판정결과 코드
+
+```{r}
+df_codebook[[10]] %>% f_reactable()
+```
+
+### 판정코드
+
+```{r}
+df_codebook[[11]] %>% f_reactable()
+```
+
+
+:::
+
+

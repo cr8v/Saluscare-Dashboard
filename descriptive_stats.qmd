@@ -1,0 +1,486 @@
+---
+format: dashboard
+---
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.getElementById('nav-descriptive-stats').classList.add('active');
+});
+</script>
+
+```{r setup}
+source("library.R")
+PID <- readRDS("/home/rstudio/Data/object/PID.rds")
+```
+
+
+# Table
+
+## Row
+
+### Column
+
+::: {.panel-tabset}
+
+```{r include=FALSE}
+df <- PID$TABLE_N_YEAR %>%
+  mutate(`SEX_M_%` = `SEX_M_%`*100, `SEX_F_%` = `SEX_F_%`*100) %>% 
+  unite("Ratio_MF", c(`SEX_M_%`,`SEX_F_%`), sep = ":")
+```
+
+#### 전체
+
+```{r}
+colors <- f_colors(df$N)
+
+df %>% select(SALUS_YEAR, N, `(%)`) %>%
+  f_reactable(
+    columns = list(
+      SALUS_YEAR = colDef(name = "YEAR", style = f_style_sticky,
+                          headerVAlign="bottom", align = "left", 
+                          sticky = "left"),
+      N = colDef(name = "Count", format = colFormat(separators = TRUE),
+                 html = TRUE, header = JS(f_header("N")),
+                 style = f_style_colors
+                 ),
+      
+      `(%)` = colDef(name = "Percent" ,format = colFormat(suffix = "%"),
+                     html = TRUE, header = JS(f_header("%")))
+      ),
+    defaultSorted = "SALUS_YEAR"
+  )
+  
+```
+
+#### 연령
+
+```{r}
+colors <- f_colors(df$AGE_AVG)
+
+df %>% select(SALUS_YEAR, contains("AGE")) %>%
+  f_reactable(
+    columns = list(
+      SALUS_YEAR = colDef(name = "YEAR", style = f_style_sticky, headerVAlign="bottom", align = "left", sticky = "left"),
+      AGE_AVG = colDef(name = "Mean", format = colFormat(digits = 1), style = f_style_colors
+                       ),
+      AGE_MIN = colDef(name = "Min"),
+      AGE_MAX = colDef(name = "Max")
+    ),
+    columnGroups = list(
+      colGroup(name = "Age", columns = c("AGE_AVG", "AGE_MIN", "AGE_MAX"))
+      ),
+    defaultSorted = "SALUS_YEAR"
+  )
+```
+
+
+#### 성별
+```{r}
+colors <- f_colors(as.numeric(str_extract(df$Ratio_MF, "\\d+")))
+
+df %>% select(SALUS_YEAR, Ratio_MF, N, starts_with("SEX_M"), starts_with("SEX_F")) %>%
+  f_reactable(
+    columns = list(
+      SALUS_YEAR = colDef(name = "YEAR", style = f_style_sticky, headerVAlign="bottom", align = "left", sticky = "left"),
+      Ratio_MF    = colDef(name = "Ratio", format = colFormat(prefix = "(", suffix = ")"), 
+                       html = TRUE, header = JS(f_header('M:F')), headerVAlign = "top", sticky = "left",
+                       style = f_style_colors
+                       ),
+      N = colDef(name = "Total", format = colFormat(separators=TRUE)),
+      SEX_M   = colDef(name = "Male", format = colFormat(separators = TRUE)),
+      SEX_F   = colDef(name = "Female" , format = colFormat(separators = TRUE))
+      ),
+    columnGroups = list(colGroup(name = "Count", c("N","SEX_M","SEX_F"))),
+    defaultSorted = "SALUS_YEAR"
+    )
+```
+
+:::
+
+
+### Column
+
+```{r include=FALSE}
+df <- PID$TABLE_N_CENTER %>% 
+  mutate(`SEX_M_%` = `SEX_M_%`*100, `SEX_F_%` = `SEX_F_%`*100) %>% 
+  unite("Ratio_MF", c(`SEX_M_%`,`SEX_F_%`), sep = ":") %>%
+  mutate(SALUS_CENTER2 = case_when(SALUS_CENTER=="111" ~ "111 / 본원",
+                                   SALUS_CENTER=="112" ~ "112 / 여의도",
+                                   SALUS_CENTER=="113" ~ "113 / 강남",
+                                   SALUS_CENTER=="211" ~ "211 / 수원",
+                                   SALUS_CENTER=="611" ~ "611 / 대구",
+                                   SALUS_CENTER=="612" ~ "612 / 부산",
+                                   SALUS_CENTER=="711" ~ "711 / 광주",
+                                   SALUS_CENTER=="811" ~ "811 / 제주",
+                                   )) %>% 
+  select(contains("_CENTER"), everything())
+```
+
+::: {.panel-tabset}
+
+#### 전체
+```{r}
+colors <- f_colors(df$N)
+
+df %>% select(SALUS_CENTER2, N, `(%)`) %>%
+  f_reactable(
+    columns = list(
+      SALUS_CENTER2 = colDef(name = "CENTER", style = f_style_sticky,
+                          headerVAlign="bottom", align = "left", 
+                          sticky = "left"),
+      N = colDef(name = "Count", format = colFormat(separators = TRUE),
+                 html = TRUE, header = JS(f_header("N")),
+                 style=f_style_colors),
+      `(%)` = colDef(name = "Percent" ,format = colFormat(suffix = "%"),
+                     html = TRUE, header = JS(f_header("%")))
+      ),
+    defaultSorted = "SALUS_CENTER2"
+  )
+```
+
+#### 연령
+
+```{r}
+colors <- f_colors(df$AGE_AVG)
+
+df %>% select(SALUS_CENTER2, contains("AGE")) %>%
+  f_reactable(
+    columns = list(
+      SALUS_CENTER2 = colDef(name = "CENTER", style = f_style_sticky, headerVAlign="bottom", align = "left", sticky = "left"),
+      AGE_AVG = colDef(name = "Mean", format = colFormat(digits = 1), style = f_style_colors),
+      AGE_MIN = colDef(name = "Min"),
+      AGE_MAX = colDef(name = "Max")
+    ),
+    columnGroups = list(
+      colGroup(name = "Age", columns = c("AGE_AVG", "AGE_MIN", "AGE_MAX"))
+      ),
+    defaultSorted = "SALUS_CENTER2"
+  )
+```
+
+
+#### 성별
+```{r}
+colors <- f_colors(df$Ratio_MF)
+
+df %>% select(SALUS_CENTER2, Ratio_MF, N, SEX_M, SEX_F) %>%
+  f_reactable(
+    columns = list(
+      SALUS_CENTER2 = colDef(name = "CENTER", style = f_style_sticky, headerVAlign="bottom", align = "left", sticky = "left"),
+      N = colDef(name = "Total", format = colFormat(separators=TRUE)),
+      SEX_M   = colDef(name = "Male", format = colFormat(separators = TRUE)),
+      SEX_F   = colDef(name = "Female" , format = colFormat(separators = TRUE)),
+      Ratio_MF    = colDef(name = "Ratio", format = colFormat(prefix = "(", suffix = ")"), 
+                       html = TRUE, header = JS(f_header('M:F')), headerVAlign = "top", sticky = "left", style = f_style_colors)
+      ),
+    columnGroups = list(colGroup(name = "Count", c("N","SEX_M","SEX_F"))),
+    defaultSorted = "SALUS_CENTER2"
+    )
+```
+
+:::
+
+
+
+
+# Graph
+
+## Row
+
+::: {.panel-tabset}
+
+### 연도별
+
+```{r}
+df <- PID$TABLE_N_YEAR %>%
+  pivot_longer(cols = c(SEX_M, SEX_F), names_to = "SEX", values_to = "COUNT")
+
+p <- df %>%
+  mutate(SEX = ifelse(SEX == "SEX_M", "Male", "Female")) %>%
+  ggplot(aes(x = SALUS_YEAR, y = COUNT, fill = SEX, text = paste0(
+    "Year: ", SALUS_YEAR, "<br>",
+    "Sex: ", SEX, "<br>",
+    "Count: ", scales::comma(COUNT)
+  ))) +
+  geom_bar(stat = "identity") +
+    scale_x_continuous(breaks = unique(df$SALUS_YEAR)) +
+  scale_y_continuous(labels = scales::comma_format()) +
+  scale_fill_manual(values = c("Male" = "#4E79A7", "Female" = "#E15759")) +
+  labs(title = "Distribution of N by Year and Sex",
+       x = "Year",
+       y = "Count",
+       fill = "Sex") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom"
+  ) + theme_ipsum()
+
+ggplotly(p, tooltip = "text") %>%
+  layout(hoverlabel = list(bgcolor = "white"),
+         legend = list(orientation = "h", y = -0.2))
+
+```
+
+### 센터별
+
+```{r}
+df <- PID$TABLE_N_CENTER %>% 
+  mutate(`SEX_M_%` = `SEX_M_%`*100, `SEX_F_%` = `SEX_F_%`*100) %>% 
+  unite("Ratio_MF", c(`SEX_M_%`,`SEX_F_%`), sep = ":") %>%
+  mutate(SALUS_CENTER2 = case_when(SALUS_CENTER=="111" ~ "111 / 본원",
+                                   SALUS_CENTER=="112" ~ "112 / 여의도",
+                                   SALUS_CENTER=="113" ~ "113 / 강남",
+                                   SALUS_CENTER=="211" ~ "211 / 수원",
+                                   SALUS_CENTER=="611" ~ "611 / 대구",
+                                   SALUS_CENTER=="612" ~ "612 / 부산",
+                                   SALUS_CENTER=="711" ~ "711 / 광주",
+                                   SALUS_CENTER=="811" ~ "811 / 제주",
+                                   )) %>% 
+  select(contains("_CENTER"), everything())
+```
+
+```{r}
+df <- df %>%
+  pivot_longer(cols = c(SEX_M, SEX_F), names_to = "SEX", values_to = "COUNT")
+
+p <- df %>%
+  mutate(SEX = ifelse(SEX == "SEX_M", "Male", "Female")) %>%
+  ggplot(aes(x = SALUS_CENTER2, y = COUNT, fill = SEX, text = paste0(
+    "Center: ", SALUS_CENTER2, "<br>",
+    "Sex: ", SEX, "<br>",
+    "Count: ", scales::comma(COUNT)
+  ))) +
+  geom_bar(stat = "identity") +
+    scale_x_discrete(breaks = unique(df$SALUS_CENTER2)) +
+  scale_y_continuous(labels = scales::comma_format()) +
+  scale_fill_manual(values = c("Male" = "#4E79A7", "Female" = "#E15759")) +
+  labs(title = "Distribution of N by Center and Sex",
+       x = "Center",
+       y = "Count",
+       fill = "Sex") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom"
+  ) + theme_ipsum()
+
+ggplotly(p, tooltip = "text") %>%
+  layout(hoverlabel = list(bgcolor = "white"),
+         legend = list(orientation = "h", y = -0.2))
+
+```
+:::
+
+## Row
+
+::: {.panel-tabset}
+
+### 성별
+```{r}
+df <- PID$PID_YEAR_CENTER %>% left_join(PID$PID_ONLY) %>% 
+  mutate(AGE = SALUS_YEAR - as.integer(substr(as.character(BRTHDD),1,4))) %>% 
+  select(-PID_ANONY, -BRTHDD)
+```
+
+```{r}
+df_wide <- df %>% count(SALUS_YEAR, SALUS_CENTER, SEX) %>%
+  pivot_wider(names_from = SEX, values_from = n) %>%
+  mutate(N = M + F,
+         Ratio_M = M / N,
+         Ratio_F = F / N) %>%
+  mutate(SALUS_CENTER2 = case_when(SALUS_CENTER=="111" ~ "111 / 본원",
+                                   SALUS_CENTER=="112" ~ "112 / 여의도",
+                                   SALUS_CENTER=="113" ~ "113 / 강남",
+                                   SALUS_CENTER=="211" ~ "211 / 수원",
+                                   SALUS_CENTER=="611" ~ "611 / 대구",
+                                   SALUS_CENTER=="612" ~ "612 / 부산",
+                                   SALUS_CENTER=="711" ~ "711 / 광주",
+                                   SALUS_CENTER=="811" ~ "811 / 제주",
+                                   ))
+
+plot_ly(
+  x = df_wide$SALUS_YEAR,
+  y = df_wide$SALUS_CENTER2,
+  z = df_wide$Ratio_M,
+  type = "heatmap",
+  colorscale = "YlGnBu", #colorscale = custom_colorscale,
+  reversescale = TRUE,
+  colorbar = list(title = "Ratio (Male)")
+) %>%
+  layout(
+    title = "Distribution by Year, Center, and Sex",
+    xaxis = list(title = "Year"),
+    yaxis = list(title = "Center"),
+    annotations = list(
+      x = 1.05,
+      y = 1.05,
+      text = "Ratio (Male)",
+      xref = "paper",
+      yref = "paper",
+      showarrow = FALSE
+    )
+  )
+
+```
+### 연령
+
+```{r}
+df_wide <- df %>% group_by(SALUS_YEAR, SALUS_CENTER) %>% summarise(AGE_AVG = mean(AGE)) %>%
+  mutate(SALUS_CENTER2 = case_when(SALUS_CENTER=="111" ~ "111 / 본원",
+                                   SALUS_CENTER=="112" ~ "112 / 여의도",
+                                   SALUS_CENTER=="113" ~ "113 / 강남",
+                                   SALUS_CENTER=="211" ~ "211 / 수원",
+                                   SALUS_CENTER=="611" ~ "611 / 대구",
+                                   SALUS_CENTER=="612" ~ "612 / 부산",
+                                   SALUS_CENTER=="711" ~ "711 / 광주",
+                                   SALUS_CENTER=="811" ~ "811 / 제주",
+                                   ))
+
+plot_ly(
+  x = df_wide$SALUS_YEAR,
+  y = df_wide$SALUS_CENTER2,
+  z = df_wide$AGE_AVG,
+  type = "heatmap",
+  colorscale = "oranges",
+  colorbar = list(title = "Age Mean")
+) %>%
+  layout(
+    title = "Distribution by Year, Center, and Age",
+    xaxis = list(title = "Year"),
+    yaxis = list(title = "Center"),
+    annotations = list(
+      x = 1.05,
+      y = 1.05,
+      text = "Age Mean",
+      xref = "paper",
+      yref = "paper",
+      showarrow = FALSE
+    )
+  )
+
+```
+:::
+
+## Row
+
+::: {.panel-tabset}
+
+```{r}
+df_wide <- df %>% 
+  mutate(SALUS_CENTER2 = case_when(SALUS_CENTER=="111" ~ "111 / 본원",
+                                   SALUS_CENTER=="112" ~ "112 / 여의도",
+                                   SALUS_CENTER=="113" ~ "113 / 강남",
+                                   SALUS_CENTER=="211" ~ "211 / 수원",
+                                   SALUS_CENTER=="611" ~ "611 / 대구",
+                                   SALUS_CENTER=="612" ~ "612 / 부산",
+                                   SALUS_CENTER=="711" ~ "711 / 광주",
+                                   SALUS_CENTER=="811" ~ "811 / 제주",
+                                   ),
+         AGE_GROUP = case_when(AGE >= 20 & AGE < 30 ~ "20s",
+                               AGE >= 30 & AGE < 40 ~ "30s",
+                               AGE >= 40 & AGE < 50 ~ "40s",
+                               AGE >= 50 & AGE < 60 ~ "50s",
+                               AGE > 60 ~ "60s+",
+                               TRUE ~ "Unknown")) %>%
+  count(SALUS_YEAR, SALUS_CENTER2, SEX, AGE_GROUP)
+
+```
+
+### 2023
+
+```{r}
+age_pyramid <- function(year) {
+  df_year <- df_wide %>% 
+    filter(SALUS_YEAR == year) %>%
+    group_by(AGE_GROUP, SEX) %>%
+    summarise(COUNT = sum(n), .groups = "drop")
+  
+  df_year$COUNT <- ifelse(df_year$SEX == "M", -df_year$COUNT, df_year$COUNT)
+  
+  ggplot(df_year, aes(x = AGE_GROUP, y = COUNT, fill = SEX)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    scale_y_continuous(labels = abs) +
+    labs(title = paste("Age Pyramid -", year),
+         x = "Age Group", y = "Population") +
+    theme_ipsum()
+}
+
+ggplotly(age_pyramid(2023))
+```
+### 본원
+
+```{r}
+age_pyramid <- function(center) {
+  df_center <- df_wide %>% 
+    filter(SALUS_CENTER2 == center) %>%
+    group_by(AGE_GROUP, SEX) %>%
+    summarise(COUNT = sum(n), .groups = "drop")
+  
+  df_center$COUNT <- ifelse(df_center$SEX == "M", -df_center$COUNT, df_center$COUNT)
+  
+  ggplot(df_center, aes(x = AGE_GROUP, y = COUNT, fill = SEX)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    scale_y_continuous(labels = abs) +
+    labs(title = paste("Age Pyramid -", center),
+         x = "Age Group", y = "Population") +
+    theme_ipsum()
+}
+
+ggplotly(age_pyramid("111 / 본원"))
+```
+
+:::
+
+## Row
+
+::: {.panel-tabset}
+
+### Count
+
+```{r}
+age_trend <- df_wide %>%
+  group_by(SALUS_YEAR, AGE_GROUP) %>%
+  summarise(COUNT = sum(n), .groups = "drop") %>%
+  ggplot(aes(x = SALUS_YEAR, y = COUNT, color = AGE_GROUP)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Age Group Trends Over Time",
+       x = "Year", y = "Population", color = "Age Group") +
+  theme_ipsum()
+
+ggplotly(age_trend)
+
+```
+
+### Proportion
+
+```{r}
+age_trend_data <- df_wide %>%
+  group_by(SALUS_YEAR, AGE_GROUP) %>%
+  summarise(COUNT = sum(n), .groups = "drop") %>%
+  group_by(SALUS_YEAR) %>%
+  mutate(TOTAL = sum(COUNT),
+         PROPORTION = COUNT / TOTAL)
+
+age_trend <- ggplot(age_trend_data, aes(x = SALUS_YEAR, y = PROPORTION, color = AGE_GROUP)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Age Group Proportion Trends Over Time",
+       x = "Year", 
+       y = "Proportion of Population",
+       color = "Age Group") +
+  theme_ipsum() +
+  theme(legend.position = "bottom")
+
+ggplotly(age_trend)
+
+```
+
+:::
+

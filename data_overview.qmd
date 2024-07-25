@@ -1,0 +1,47 @@
+---
+format: dashboard
+---
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.getElementById('nav-data-overview').classList.add('active');
+});
+</script>
+
+```{r setup, include=FALSE}
+source("library.R")
+```
+
+```{r data, include=FALSE}
+list_column <- readRDS("/home/rstudio/Data/object/list_column.rds")
+```
+
+# Layout
+
+```{r data-1}
+df_layout <- list_column$layout
+```
+
+::: {.panel-tabset}
+
+## 전체
+
+```{r reactable-1}
+df_layout %>% 
+  select(COLUMN, 비고, AINQ:RSLT, starts_with("N_")) %>% 
+  mutate(COLUMN = gsub("\\(.*\\)","",COLUMN)) %>%
+  f_reactable(columns = list(
+    COLUMN = colDef(name = "Column", style = f_style_bold),
+    비고   = colDef(name = "비고"),
+    AINQ   = colDef(name = "AINQ"),
+    JUDD   = colDef(name = "JUDD"),
+    RSLT   = colDef(name = "RSLT"),
+    N_ALL  = colDef(style = f_style1),
+    N_AINQ = colDef(style = f_style2),
+    N_JUDD = colDef(style = f_style2),
+    N_RSLT = colDef(style = f_style2)
+  )
+)
+```
+
+:::

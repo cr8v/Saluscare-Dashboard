@@ -1,68 +1,44 @@
 ---
-title: "Saluscare Dashboard"
-format:
-  dashboard:
-    scrolling: true
-    theme: cosmo
-execute:
-  echo: false
-editor: visual
+format: dashboard
 ---
 
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.getElementById('nav-overview').classList.add('active');
+});
+</script>
+
 ```{r setup, include=FALSE}
-library(tidyverse)
-library(data.table)
-library(reactable)
-library(bslib)
-library(htmltools)
-library(shiny)
-
-f_reactable <- function(x){ reactable(x, filterable = TRUE, sortable = TRUE) }
-
-list_column <- readRDS("/home/rstudio/Data/object/list_column.rds")
+source("library.R")
 ```
 
-# Data Overview
+# Status
 
-## Column
+```{r data}
+PID <- readRDS("/home/rstudio/Data/object/PID.rds")
+```
 
-```{r list_colum$layout}
-#| title: 데이터 종류별 변수
-
-f_style1 <- function(value) { if ((value %% 64 == 0) & (value != 0)) { list(fontWeight = "bold") } else if (value != 0) { list() } else { list() } }
-
-f_style2 <- function(value) { if (value == 64) { list(color = "green", fontWeight = "bold") } else if (value != 0) { list(color = "red") } else { list() } }
-
-reactable(
-  list_column$layout %>% select(COLUMN, 비고, AINQ:RSLT, starts_with("N_")),
-  filterable = TRUE, sortable = TRUE,
-  columns = list(
-    N_ALL  = colDef(style = f_style1),
-    N_AINQ = colDef(style = f_style2),
-    N_JUDD = colDef(style = f_style2),
-    N_RSLT = colDef(style = f_style2),
-    COLUMN = colDef(name = "Column"),
-    비고   = colDef(name = "비고"),
-    AINQ   = colDef(name = "AINQ"),
-    JUDD   = colDef(name = "JUDD"),
-    RSLT   = colDef(name = "RSLT")
-  )
+## Row
+### Column
+```{r valuebox-1}
+#| content: valuebox
+#| title: "총 대상자수 (명)"
+list(
+  icon = "file-person-fill",
+  color = "danger",
+  value = format(nrow(PID$PID_ONLY), big.mark = ",", scientific = FALSE),
+  value_suffix = "명"
 )
 ```
 
-```{r list_column$codebook}
-#| title: 코드북
-df <- list_column$codebook
-
-tabset_content <- tabsetPanel(
-  tabPanel(names(df[[2]])[1], f_reactable(df[[2]] %>% select(HEALEXAMDETLFLAG, DETLDESC))),
-  tabPanel(names(df[[3]])[1], f_reactable(df[[3]] %>% select(TESTCD, TESTNM, LRFLAG, everything()))),
-  tabPanel(names(df[[4]])[1], f_reactable(df[[4]] %>% select(PRCPCD, PRCPNM, FROMDD, TODD, everything()))),
-  tabPanel(names(df[[5]])[1], f_reactable(df[[5]] %>% select(INQRFLAG, CDNAME, FROMDD, TODD, everything())))
+### Column
+```{r valuebox-2}
+#| content: valuebox
+#| title: "누적검진 (건)"
+list(
+  icon = "bar-chart",
+  color = "secondary",
+  value = format(sum(PID$TABLE_N_YEAR$N), big.mark = ",", scientific = FALSE)
 )
-
-card(tabset_content)
-
 ```
 
-# TABLE

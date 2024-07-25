@@ -1,0 +1,17 @@
+/* 기본 navbar 링크 스타일 */
+.navbar-nav .nav-item .nav-link {
+    color: white;
+}
+
+/* 활성화된 navbar 링크 스타일 */
+.navbar-nav .nav-item .nav-link.active {
+    color: white;
+    font-weight: bold;
+    border-bottom: 2px solid white;
+}
+
+/* 호버 효과 (선택사항) */
+.navbar-nav .nav-item .nav-link:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+

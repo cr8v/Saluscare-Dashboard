@@ -1,0 +1,37 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "데이터 현황",
+    "section": "",
+    "text": "list(\n  icon = \"file-person-fill\",\n  color = \"danger\",\n  value = paste0(nrow(PID$PID_ONLY),\"명\")\n)\n\n$icon\n[1] \"file-person-fill\"\n\n$color\n[1] \"danger\"\n\n$value\n[1] \"3345215명\"\n\n\n\nlist(\n  icon = \"bar-chart\",\n  color = \"secondary\",\n  value = paste0(sum(PID$TABLE_N_YEAR$N),\"건\")\n)\n\n$icon\n[1] \"bar-chart\"\n\n$color\n[1] \"secondary\"\n\n$value\n[1] \"7774704건\"\n\n\n\n\n\n\n전체연령성별\n\n\n\nf_header &lt;- function(value){\n  units &lt;- div(style = \"color: #737373\", \"year\")\n  div(title = value, value, units)\n                          }\n\nPID$TABLE_N_YEAR %&gt;% select(SALUS_YEAR, N, `(%)`) %&gt;%\n  reactable(\n    columns = list(\n      SALUS_YEAR = colDef(name = \"YEAR\", style = f_style_bold, align=\"center\", html=TRUE,\n                          header = f_header),\n      N = colDef(name = \"N\", format = colFormat(separators = TRUE)),\n      `(%)` = colDef(name = \"(%)\" ,format = colFormat(suffix = \"%\"), align=\"left\")\n      ),\n    defaultColDef = colDef(align = \"right\"),\n    striped = TRUE,\n    highlight = TRUE\n  )\n\n\n\n\n\n\n\n\nPID$TABLE_N_YEAR %&gt;% select(SALUS_YEAR, N, contains(\"AGE\")) %&gt;%\n  reactable()\n\n\n\n\n\n\n\n\nPID$TABLE_N_YEAR %&gt;% select(SALUS_YEAR, N, starts_with(\"SEX_M\"),starts_with(\"SEX_F\")) %&gt;%\n  mutate(`SEX_M_%` = `SEX_M_%`*100, `SEX_F_%` = `SEX_F_%`*100) %&gt;% \n  unite(\"비율\", c(`SEX_M_%`,`SEX_F_%`), sep = \":\") %&gt;% select(SALUS_YEAR, N, SEX_M, SEX_F, 비율) %&gt;%\n  reactable(\n    columns = list(\n      SALUS_YEAR = colDef(name = \"YEAR\", style = f_style_bold, align=\"center\"),\n      N = colDef(name = \"N (Total)\", format = colFormat(separators = TRUE)),\n      SEX_M   = colDef(name = \"N (Male)\", format = colFormat(separators = TRUE)),\n      SEX_F   = colDef(name = \"N (Female)\" , format = colFormat(separators = TRUE)),\n      비율    = colDef(name = \"Proportion (M:F)\", format = colFormat(prefix = \"(\", suffix = \")\"))\n      ),\n    defaultColDef = colDef(align = \"right\"),\n    striped = TRUE,\n    highlight = TRUE)\n\n\n\n\n\n\n\n\n\n\n\n\ndf &lt;- PID$TABLE_N_YEAR %&gt;%\n  pivot_longer(cols = c(SEX_M, SEX_F), names_to = \"SEX\", values_to = \"COUNT\")\n\n# Create the stacked bar chart\nggplot(df, aes(x = SALUS_YEAR, y = COUNT, fill = SEX)) +\n  geom_bar(stat = \"identity\") +\n  scale_y_continuous() + #labels = comma_format(scale = 1e-3, suffix = \"K\")\n  scale_fill_manual(values = c(\"SEX_M\" = \"#4E79A7\", \"SEX_F\" = \"#E15759\")) +\n  labs(title = \"Distribution of N by Year and Sex\",\n       x = \"Year\",\n       y = \"Count (Thousands)\",\n       fill = \"Sex\") +\n  theme_minimal() +\n  theme(\n    plot.title = element_text(hjust = 0.5, face = \"bold\"),\n    axis.text.x = element_text(angle = 45, hjust = 1),\n    legend.position = \"bottom\"\n  )\n\n\n\n\n\n\n\n\n\n\n\n\nreactable::reactable(PID$TABLE_N_CENTER)"
+  },
+  {
+    "objectID": "index.html#row-height-150",
+    "href": "index.html#row-height-150",
+    "title": "데이터 현황",
+    "section": "",
+    "text": "list(\n  icon = \"file-person-fill\",\n  color = \"danger\",\n  value = paste0(nrow(PID$PID_ONLY),\"명\")\n)\n\n$icon\n[1] \"file-person-fill\"\n\n$color\n[1] \"danger\"\n\n$value\n[1] \"3345215명\"\n\n\n\nlist(\n  icon = \"bar-chart\",\n  color = \"secondary\",\n  value = paste0(sum(PID$TABLE_N_YEAR$N),\"건\")\n)\n\n$icon\n[1] \"bar-chart\"\n\n$color\n[1] \"secondary\"\n\n$value\n[1] \"7774704건\""
+  },
+  {
+    "objectID": "index.html#row",
+    "href": "index.html#row",
+    "title": "데이터 현황",
+    "section": "",
+    "text": "전체연령성별\n\n\n\nf_header &lt;- function(value){\n  units &lt;- div(style = \"color: #737373\", \"year\")\n  div(title = value, value, units)\n                          }\n\nPID$TABLE_N_YEAR %&gt;% select(SALUS_YEAR, N, `(%)`) %&gt;%\n  reactable(\n    columns = list(\n      SALUS_YEAR = colDef(name = \"YEAR\", style = f_style_bold, align=\"center\", html=TRUE,\n                          header = f_header),\n      N = colDef(name = \"N\", format = colFormat(separators = TRUE)),\n      `(%)` = colDef(name = \"(%)\" ,format = colFormat(suffix = \"%\"), align=\"left\")\n      ),\n    defaultColDef = colDef(align = \"right\"),\n    striped = TRUE,\n    highlight = TRUE\n  )\n\n\n\n\n\n\n\n\nPID$TABLE_N_YEAR %&gt;% select(SALUS_YEAR, N, contains(\"AGE\")) %&gt;%\n  reactable()\n\n\n\n\n\n\n\n\nPID$TABLE_N_YEAR %&gt;% select(SALUS_YEAR, N, starts_with(\"SEX_M\"),starts_with(\"SEX_F\")) %&gt;%\n  mutate(`SEX_M_%` = `SEX_M_%`*100, `SEX_F_%` = `SEX_F_%`*100) %&gt;% \n  unite(\"비율\", c(`SEX_M_%`,`SEX_F_%`), sep = \":\") %&gt;% select(SALUS_YEAR, N, SEX_M, SEX_F, 비율) %&gt;%\n  reactable(\n    columns = list(\n      SALUS_YEAR = colDef(name = \"YEAR\", style = f_style_bold, align=\"center\"),\n      N = colDef(name = \"N (Total)\", format = colFormat(separators = TRUE)),\n      SEX_M   = colDef(name = \"N (Male)\", format = colFormat(separators = TRUE)),\n      SEX_F   = colDef(name = \"N (Female)\" , format = colFormat(separators = TRUE)),\n      비율    = colDef(name = \"Proportion (M:F)\", format = colFormat(prefix = \"(\", suffix = \")\"))\n      ),\n    defaultColDef = colDef(align = \"right\"),\n    striped = TRUE,\n    highlight = TRUE)"
+  },
+  {
+    "objectID": "index.html#row-1",
+    "href": "index.html#row-1",
+    "title": "데이터 현황",
+    "section": "",
+    "text": "df &lt;- PID$TABLE_N_YEAR %&gt;%\n  pivot_longer(cols = c(SEX_M, SEX_F), names_to = \"SEX\", values_to = \"COUNT\")\n\n# Create the stacked bar chart\nggplot(df, aes(x = SALUS_YEAR, y = COUNT, fill = SEX)) +\n  geom_bar(stat = \"identity\") +\n  scale_y_continuous() + #labels = comma_format(scale = 1e-3, suffix = \"K\")\n  scale_fill_manual(values = c(\"SEX_M\" = \"#4E79A7\", \"SEX_F\" = \"#E15759\")) +\n  labs(title = \"Distribution of N by Year and Sex\",\n       x = \"Year\",\n       y = \"Count (Thousands)\",\n       fill = \"Sex\") +\n  theme_minimal() +\n  theme(\n    plot.title = element_text(hjust = 0.5, face = \"bold\"),\n    axis.text.x = element_text(angle = 45, hjust = 1),\n    legend.position = \"bottom\"\n  )"
+  },
+  {
+    "objectID": "index.html#row-2",
+    "href": "index.html#row-2",
+    "title": "데이터 현황",
+    "section": "",
+    "text": "reactable::reactable(PID$TABLE_N_CENTER)"
+  }
+]
