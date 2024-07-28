@@ -50,6 +50,7 @@ df_codebook[[2]] %>%
 
 ```{r}
 df_codebook[[8]] %>%
+  mutate(TODD_Group = case_when(grepl("9999",TODD)~"Current", TRUE ~ "Before")) %>%
   mutate(
     SICKCD = toupper(SICKCD),
     SICKCD_Subgroup = str_sub(SICKCD, 1, 1),
@@ -71,7 +72,8 @@ df_codebook[[8]] %>%
   arrange(SICKCD_Group, SICKCD_Subgroup, SICKCD_Subgroup2, SICKCD) %>% 
 f_reactable(
   columnGroups = list(colGroup("GROUP", columns = c("SICKCD_Group", "SICKCD_Subgroup","SICKCD_Subgroup2"), sticky = "left")),
-  columns = list(
+  columns = list(TODD_Group = colDef(align="left"),
+    
       SICKCD = colDef(name = "SICKCD", maxWidth = 100 , align = "left", style = f_style_sticky),
       SICKCD_Group = colDef(name = "1st", align = "left", maxWidth = 120),
       SICKCD_Subgroup = colDef(name = "2nd", align = "left", maxWidth = 100),
@@ -80,7 +82,7 @@ f_reactable(
       TODD = colDef(maxWidth = 120, align = "left"),
       CDNAME = colDef(align = "left", aggregate = "unique", maxWidth = 1000)
     ),
-  groupBy = c("SICKCD_Group", "SICKCD_Subgroup", "SICKCD_Subgroup2"),
+  groupBy = c("TODD_Group", "SICKCD_Group", "SICKCD_Subgroup", "SICKCD_Subgroup2"),
   pagination = FALSE,
   compact = TRUE,
   wrap = FALSE,
@@ -91,7 +93,9 @@ f_reactable(
 ### 처방코드
 
 ```{r}
-df_codebook[[4]] %>% mutate(PRCPCD_Group = factor(case_when(str_detect(PRCPCD, "^\\d") ~ "0-9",
+df_codebook[[4]] %>% 
+  mutate(TODD_Group = case_when(grepl("9999",TODD)~"Current", TRUE ~ "Before")) %>%
+  mutate(PRCPCD_Group = factor(case_when(str_detect(PRCPCD, "^\\d") ~ "0-9",
                                                             str_detect(PRCPCD, "^[A-Z|a-z]") ~ "A-Z",
                                                      TRUE ~ "Others"), levels = c("A-Z","0-9","Others")),
                             PRCPCD_Group2 = str_extract(PRCPCD, "^[A-Z0-9]"),
@@ -100,9 +104,10 @@ df_codebook[[4]] %>% mutate(PRCPCD_Group = factor(case_when(str_detect(PRCPCD, "
                                                       )
                             ) %>% 
   select(PRCPCD, FROMDD, TODD, PRCPNM, everything()) %>%
-  arrange(desc(nchar(PRCPCD_Group3)), PRCPCD_Group, PRCPCD) %>%
+  arrange(PRCPCD_Group, PRCPCD) %>%
   f_reactable(
-    columns = list(PRCPCD_Group  = colDef(name = "1st", align = "left", maxWidth = 100),
+    columns = list(TODD_Group = colDef(align="left"),
+                   PRCPCD_Group  = colDef(name = "1st", align = "left", maxWidth = 100),
                    PRCPCD_Group2 = colDef(name = "2nd", align = "left", maxWidth = 100),
                    PRCPCD_Group3 = colDef(name = "3rd", align = "left", minWidth = 130),
                    PRCPCD = colDef(style = f_style_sticky, sticky = "left", align = "left", minWidth = 130),
@@ -111,7 +116,7 @@ df_codebook[[4]] %>% mutate(PRCPCD_Group = factor(case_when(str_detect(PRCPCD, "
                    TODD = colDef(minWidth = 120, maxWidth = 200, align = "left")
                    ),
     columnGroups = list(colGroup("GROUP", columns = c("PRCPCD_Group", "PRCPCD_Group2","PRCPCD_Group3"), sticky = "left")),
-    groupBy = c("PRCPCD_Group", "PRCPCD_Group2", "PRCPCD_Group3"),
+    groupBy = c("TODD_Group","PRCPCD_Group", "PRCPCD_Group2", "PRCPCD_Group3"),
     pagination = FALSE,
     compact = TRUE,
     wrap = FALSE
@@ -155,28 +160,59 @@ df_codebook[[3]] %>%
 ### 문진분류
 
 ```{r}
-df_codebook[[5]] %>% select(INQRFLAG, CDNAME, FROMDD, TODD, everything()) %>%
-  f_reactable(columns = list(INQRFLAG = colDef(style = f_style_sticky)
+df_codebook[[5]] %>% 
+  mutate(TODD_Group = case_when(grepl("9999",TODD)~"Current", TRUE ~ "Before")) %>%
+  mutate(INQRFLAG_Group = str_extract(INQRFLAG, "^[A-Z]+")) %>%
+  select(TODD_Group, INQRFLAG_Group, INQRFLAG, CDNAME, FROMDD, TODD, everything()) %>%
+  arrange(INQRFLAG) %>%
+  f_reactable(columns = list(TODD_Group = colDef(align="left"),
+                             INQRFLAG_Group = colDef(align = "left"),
+                             INQRFLAG = colDef(style = f_style_sticky)
                              ),
-              pagination = FALSE
+              groupBy = c("TODD_Group","INQRFLAG_Group"),
+              pagination = FALSE,
+              height = 500
             )
+```
+
+### 문진분류-코드
+
+```{r}
+df_codebook[[6]] %>% select(APPYEAR, HEALEXAMFLAG, INQRFLAG, SUPINQRCD, INQRCD, INQRNM) %>% 
+  mutate(SUPINQRCD_Group = case_when(SUPINQRCD == "*" ~ "*", TRUE ~ "_*"),
+         SUPINQRCD_Group2 = nchar(INQRCD)) %>%
+  arrange(desc(APPYEAR),HEALEXAMFLAG,INQRFLAG) %>%
+  #filter(HEALEXAMFLAG == "C", SUPINQRCD == "*") %>%
+  f_reactable(
+    columns = list(
+      APPYEAR = colDef(defaultSortOrder = "desc"),
+      INQRFLAG = colDef(align="left"),
+      SUPINQRCD = colDef(align="left"),
+      INQRNM = colDef(aggregate = "unique")),
+    groupBy = c("APPYEAR","HEALEXAMFLAG","INQRFLAG","SUPINQRCD_Group","SUPINQRCD_Group2","SUPINQRCD"),
+    defaultSorted = c("APPYEAR","SUPINQRCD"),
+    wrap = FALSE,
+    height = 500
+  )
 ```
 
 ### 문진코드
 
 ```{r}
 df_codebook[[6]] %>% 
-  arrange(APPYEAR, HEALEXAMFLAG, INQRFLAG, INQRCD) %>%
+  arrange(desc(APPYEAR), INQRCD, HEALEXAMFLAG, INQRFLAG) %>%
   f_reactable(
     columns = list(HEALEXAMFLAG = colDef(align = "left"),
                    INQRFLAG = colDef(align = "left"),
-                   APPYEAR = colDef(align = "left", defaultSortOrder = "desc", aggregate = "unique"),
-                   INQRCD = colDef(align = "left"),
+                   SUPINQRCD = colDef(align = "left"),
+                   APPYEAR = colDef(align = "left", defaultSortOrder = "desc"),
+                   INQRCD = colDef(align = "left", defaultSortOrder = "asc"),
                    INQRNM = colDef(align = "left")
                    ),
-    groupBy = c("HEALEXAMFLAG","INQRFLAG","APPYEAR"),
-    defaultSorted = c("HEALEXAMFLAG","INQRFLAG","APPYEAR","INQRCD"),
-    wrap = FALSE
+    groupBy = c("APPYEAR","USEYN","HEALEXAMFLAG","INQRFLAG","SUPINQRCD"),
+    defaultSorted = c("APPYEAR","INQRCD"),
+    wrap = FALSE,
+    pagination = FALSE
     )
 ```
 
@@ -215,8 +251,7 @@ df_codebook[[7]] %>%
 ###############################################################
 
 df_codebook[[9]] %>% 
-  mutate(TODD_Group = case_when(grepl("9999",TODD)~"Current",
-                   TRUE ~ "Before")) %>%
+  mutate(TODD_Group = case_when(grepl("9999",TODD)~"Current", TRUE ~ "Before")) %>%
   mutate(JUDGRSLTCD1_Group = str_extract(JUDGRSLTCD1, "^[A-Z]+"),
          JUDGRSLTCD1_Group3 = str_remove(JUDGRSLTCD1, "^[A-Z]+")
          ) %>%
@@ -228,6 +263,7 @@ df_codebook[[9]] %>%
   arrange(JUDGRSLTCD1) %>%
   f_reactable(
     columns = list(
+      TODD_Group = colDef(align = "left"),
       JUDGRSLTCD1_Group = colDef(name= "1st", align = "left"),
       JUDGRSLTCD1_Group2 = colDef(name= "2nd", align = "left"),
       JUDGRSLTCD1_Group3 = colDef(name= "3rd", align = "left"),
@@ -248,13 +284,33 @@ df_codebook[[9]] %>%
 ### 판정결과 코드
 
 ```{r}
-df_codebook[[10]] %>% f_reactable()
+df_codebook[[10]] %>% 
+  mutate(TODD_Group = case_when(grepl("9999",TODD)~"Current", TRUE ~ "Before")) %>%
+  mutate(JUDGFLAG_Group = str_extract(JUDGFLAG, "^[A-Z|a-z]")) %>%
+  arrange(JUDGFLAG) %>%
+  f_reactable(
+    groupBy = c("TODD_Group","JUDGFLAG_Group"),
+    pagination = FALSE,
+    height = 500
+  )
 ```
 
 ### 판정코드
 
 ```{r}
-df_codebook[[11]] %>% f_reactable()
+df_codebook[[11]] %>% 
+  mutate(TODD_Group = case_when(grepl("9999",TODD)~"Current", TRUE ~ "Before")) %>%
+  mutate(JUDGCD_Group = str_extract(JUDGCD,"^[A-Z|0-9]"),
+         JUDGCD_Group2 = str_extract(JUDGCD,"^[A-Z]+")
+         ) %>%
+  arrange(JUDGCD) %>%
+  f_reactable(
+    columns = list(JUDGNM = colDef(aggregate = "unique")),
+    groupBy = c("TODD_Group","HEALEXAMFLAG","HEALEXAMDETLFLAG",
+                "JUDGCD_Group","JUDGCD_Group2"),
+    wrap = FALSE,
+    height = 500
+  )
 ```
 
 
