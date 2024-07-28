@@ -6,12 +6,9 @@ format:
   dashboard:
     theme: cosmo
     css: styles.css
-    nav-buttons:
-      - icon: github
-        href: https://github.com/cr8v/saluscare-dashboard
 
 website:
-  title: "Saluscare Dashboard"
+  title: "살루스케어"
   navbar:
     background: primary
     search: true
