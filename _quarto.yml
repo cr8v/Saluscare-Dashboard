@@ -8,7 +8,7 @@ format:
     css: styles.css
 
 website:
-  title: "살루스케어"
+  title: "Saluscare Dashboard"
   navbar:
     background: primary
     search: true
@@ -58,7 +58,4 @@ website:
 
   page-footer:
     left: "Copyright 2024, Saluscare"
-    right:
-      - icon: github
-        href: https://github.com/cr8v/saluscare-dashboard
 
