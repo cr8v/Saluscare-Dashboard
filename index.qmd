@@ -1,7 +1,5 @@
 ---
-format:
-  dashboard:
-    scrolling: true
+format: dashboard
 ---
 
 <script>
@@ -20,7 +18,7 @@ source("library.R")
 PID <- readRDS("/home/rstudio/Data/object/PID.rds")
 ```
 
-## Row
+## Row {height=30%}
 ### Column
 ```{r valuebox-1}
 #| content: valuebox
@@ -43,10 +41,11 @@ list(
 )
 ```
 
+## Row {height=70%}
 
 # Image
 
-## Row
+## Row {height=30%}
 ```{r}
 list_dcm <- readRDS("/home/rstudio/Data/object/list_dcm.rds")
 ```
@@ -55,7 +54,6 @@ list_dcm <- readRDS("/home/rstudio/Data/object/list_dcm.rds")
 ```{r valuebox-3}
 #| content: valuebox
 #| title: "ChestPA (개)"
-#| height: 1
 
 list(
   icon = "file-person-fill",
@@ -68,7 +66,8 @@ list(
 ```{r valuebox-4}
 #| content: valuebox
 #| title: "Mammo (개)"
-#| height: 1
+
+
 list(
   icon = "bar-chart",
   color = "success",
@@ -78,7 +77,7 @@ list(
 
 
 
-## Row
+## Row {height=70%}
 
 ### Column
 
@@ -91,51 +90,70 @@ list(
 ##### 센터
 ```{r}
 list_dcm$chestpa$count[[1]] %>%
-  f_reactable()
+  f_reactable(
+    pagination = FALSE,
+    searchable = FALSE
+  )
 ```
 
 ##### 연도
 
 ```{r}
 list_dcm$chestpa$count[[2]] %>%
-  f_reactable()
+  f_reactable(
+    pagination = FALSE,
+    searchable = FALSE
+  )
 ```
 
 ##### 센터x연도
 ```{r}
 list_dcm$chestpa$count[[3]] %>%
-  f_reactable()
+  f_reactable(
+    pagination = FALSE,
+    searchable = FALSE
+  )
 ```
 
 ##### 날짜_월
 ```{r}
 list_dcm$chestpa$count[[4]] %>%
-  f_reactable()
+  f_reactable(
+    pagination = FALSE,
+    searchable = FALSE
+  )
 ```
 
 ##### 날짜_연도_월
 
 ```{r}
 list_dcm$chestpa$count[[5]] %>%
-  f_reactable()
+  f_reactable(
+    pagination = FALSE,
+    searchable = FALSE
+  )
 ```
 
 ##### Modality
 
 ```{r}
 list_dcm$chestpa$count[[6]] %>%
-  f_reactable()
+  f_reactable(
+    pagination = FALSE,
+    searchable = FALSE
+  )
 ```
 
 ##### UID x Modality
 
 ```{r}
 list_dcm$chestpa$count[[9]] %>%
-  f_reactable()
+  f_reactable(
+    pagination = FALSE,
+    searchable = FALSE
+  )
 ```
 
-
-:::
 
 :::
 
