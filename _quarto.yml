@@ -9,7 +9,6 @@ format:
 
 website:
   title: "SALUS DASHBOARD"
-  url: https://salus.town
   navbar:
     background: primary
     search: true
