@@ -172,8 +172,7 @@ df_codebook[[5]] %>%
                              INQRFLAG = colDef(style = f_style_sticky)
                              ),
               groupBy = c("TODD_Group","INQRFLAG_Group"),
-              pagination = FALSE,
-              height = 500
+              pagination = FALSE
             )
 ```
 
@@ -193,8 +192,7 @@ df_codebook[[6]] %>% select(APPYEAR, HEALEXAMFLAG, INQRFLAG, SUPINQRCD, INQRCD, 
       INQRNM = colDef(aggregate = "unique")),
     groupBy = c("APPYEAR","HEALEXAMFLAG","INQRFLAG","SUPINQRCD_Group","SUPINQRCD_Group2","SUPINQRCD"),
     defaultSorted = c("APPYEAR","SUPINQRCD"),
-    wrap = FALSE,
-    height = 500
+    wrap = FALSE
   )
 ```
 
@@ -277,8 +275,7 @@ df_codebook[[9]] %>%
       
     ),
     groupBy = c("TODD_Group", "JUDGRSLTCD1_Group","JUDGRSLTCD1_Group2","JUDGRSLTCD1_Group3"),
-    compact = TRUE, wrap = FALSE,
-    height = 500
+    compact = TRUE, wrap = FALSE
   )
 
 ```
@@ -292,8 +289,7 @@ df_codebook[[10]] %>%
   arrange(JUDGFLAG) %>%
   f_reactable(
     groupBy = c("TODD_Group","JUDGFLAG_Group"),
-    pagination = FALSE,
-    height = 500
+    pagination = FALSE
   )
 ```
 
@@ -310,8 +306,7 @@ df_codebook[[11]] %>%
     columns = list(JUDGNM = colDef(aggregate = "unique")),
     groupBy = c("TODD_Group","HEALEXAMFLAG","HEALEXAMDETLFLAG",
                 "JUDGCD_Group","JUDGCD_Group2"),
-    wrap = FALSE,
-    height = 500
+    wrap = FALSE
   )
 ```
 

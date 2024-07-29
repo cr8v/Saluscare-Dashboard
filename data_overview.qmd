@@ -42,30 +42,108 @@ df_layout %>%
                    N_JUDD = colDef(style = f_style2),
                    N_RSLT = colDef(style = f_style2)
   ),
-  pagination=FALSE
+  pagination=FALSE,
+  wrap=FALSE
 )
 ```
 
+## AINQ
+```{r}
+df_layout %>%
+  filter(AINQ == "O") %>%
+  select(COLUMN, 비고, AINQ:RSLT, starts_with("N_")) %>% 
+  mutate(COLUMN = gsub("\\(.*\\)","",COLUMN)) %>%
+  f_reactable(
+    columns = list(COLUMN = colDef(name = "Column", style = f_style_bold),
+                   비고   = colDef(name = "비고"),
+                   AINQ   = colDef(name = "AINQ"),
+                   JUDD   = colDef(name = "JUDD"),
+                   RSLT   = colDef(name = "RSLT"),
+                   N_ALL  = colDef(style = f_style1),
+                   N_AINQ = colDef(style = f_style2),
+                   N_JUDD = colDef(style = f_style2),
+                   N_RSLT = colDef(style = f_style2)
+  ),
+  pagination=FALSE,
+  wrap=FALSE
+)
+```
+
+## JUDD
+```{r}
+df_layout %>%
+  filter(JUDD == "O") %>%
+  select(COLUMN, 비고, AINQ:RSLT, starts_with("N_")) %>% 
+  mutate(COLUMN = gsub("\\(.*\\)","",COLUMN)) %>%
+  f_reactable(
+    columns = list(COLUMN = colDef(name = "Column", style = f_style_bold),
+                   비고   = colDef(name = "비고"),
+                   AINQ   = colDef(name = "AINQ"),
+                   JUDD   = colDef(name = "JUDD"),
+                   RSLT   = colDef(name = "RSLT"),
+                   N_ALL  = colDef(style = f_style1),
+                   N_AINQ = colDef(style = f_style2),
+                   N_JUDD = colDef(style = f_style2),
+                   N_RSLT = colDef(style = f_style2)
+  ),
+  pagination=FALSE,
+  wrap=FALSE
+)
+```
+## RSLT
+```{r}
+df_layout %>%
+  filter(RSLT == "O") %>%
+  select(COLUMN, 비고, AINQ:RSLT, starts_with("N_")) %>% 
+  mutate(COLUMN = gsub("\\(.*\\)","",COLUMN)) %>%
+  f_reactable(
+    columns = list(COLUMN = colDef(name = "Column", style = f_style_bold),
+                   비고   = colDef(name = "비고"),
+                   AINQ   = colDef(name = "AINQ"),
+                   JUDD   = colDef(name = "JUDD"),
+                   RSLT   = colDef(name = "RSLT"),
+                   N_ALL  = colDef(style = f_style1),
+                   N_AINQ = colDef(style = f_style2),
+                   N_JUDD = colDef(style = f_style2),
+                   N_RSLT = colDef(style = f_style2)
+  ),
+  pagination=FALSE,
+  wrap=FALSE
+)
+```
 :::
 
 # PACS
 
 ```{r data-2, include=FALSE}
 df_pacs <- read_csv("/home/rstudio/Data/meta/240729_PACS 비정형 데이터 보유 현황_살루스케어.csv")
-#status_PACS <- readRDS("/home/rstudio/Data/object/status_PACS.rds")
+
+df_pacs <- df_pacs %>%
+  mutate(MODALITY = case_when(`검사 유형`!=`검사구분(MODALITY)` ~ paste0(`검사 유형`," (",`검사구분(MODALITY)`,")"),
+                              TRUE ~ .$`검사 유형`))
+
 ```
 
 ::: {.panel-tabset}
 
 ## MODALITY
 
-```{r}
-modalities <- df_pacs %>% 
-  count(`검사구분(MODALITY)`, sort = TRUE) %>% 
-  pull(`검사구분(MODALITY)`)
-```
-
 ::: {.panel-tabset}
+
+### 전체
+
+```{r}
+df_pacs %>%
+  select(-"검사구분(MODALITY)",-"검사 유형") %>%
+  f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
+    groupBy = c("MODALITY","검사명１"),
+    pagination=FALSE,
+    wrap = FALSE
+  )
+```
 
 
 ### 복부 외 초음파 (US)
@@ -73,9 +151,14 @@ modalities <- df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'US') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -84,9 +167,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'CT') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -95,9 +183,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'MR') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -106,9 +199,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'DR') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -117,6 +215,7 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'ES') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
     groupBy = c("검사명１"),
     pagination=FALSE
@@ -128,9 +227,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'OT') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -139,9 +243,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'PT') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -150,9 +259,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'EK') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -161,9 +275,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'MG') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -172,9 +291,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'RF') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -183,9 +307,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'VS') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -194,9 +323,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'XC') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -205,9 +339,14 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'EKG') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
@@ -216,21 +355,20 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(`검사구분(MODALITY)` == 'OP') %>%
+  select(-"검사구분(MODALITY)",-"검사 유형",-MODALITY) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(aggregate = "unique")
+    ),
     groupBy = c("검사명１"),
-    pagination=FALSE
+    pagination=FALSE,
+    wrap = FALSE
   )
 ```
 
 :::
 
 ## CENTER
-
-```{r}
-df_pacs <- df_pacs %>%
-  mutate(MODALITY = case_when(`검사 유형`!=`검사구분(MODALITY)` ~ paste0(`검사 유형`," (",`검사구분(MODALITY)`,")"),
-                              TRUE ~ .$`검사 유형`))
-```
 
 ::: {.panel-tabset}
 
@@ -239,6 +377,7 @@ df_pacs <- df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(SALUS_CENTER == '본원') %>%
+  select(-SALUS_CENTER,-"검사구분(MODALITY)",-"검사 유형") %>%
   f_reactable(
   groupBy = c('MODALITY'),
   pagination=FALSE
@@ -250,6 +389,7 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(SALUS_CENTER == '여의도') %>%
+  select(-SALUS_CENTER,-"검사구분(MODALITY)",-"검사 유형") %>%
   f_reactable(
   groupBy = c('MODALITY'),
   pagination=FALSE
@@ -261,6 +401,7 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(SALUS_CENTER == '강남') %>%
+  select(-SALUS_CENTER,-"검사구분(MODALITY)",-"검사 유형") %>%
   f_reactable(
   groupBy = c('MODALITY'),
   pagination=FALSE
@@ -272,6 +413,7 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(SALUS_CENTER == '수원') %>%
+  select(-SALUS_CENTER,-"검사구분(MODALITY)",-"검사 유형") %>%
   f_reactable(
   groupBy = c('MODALITY'),
   pagination=FALSE
@@ -283,6 +425,7 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(SALUS_CENTER == '대구') %>%
+  select(-SALUS_CENTER,-"검사구분(MODALITY)",-"검사 유형") %>%
   f_reactable(
   groupBy = c('MODALITY'),
   pagination=FALSE
@@ -294,6 +437,7 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(SALUS_CENTER == '부산') %>%
+  select(-SALUS_CENTER,-"검사구분(MODALITY)",-"검사 유형") %>%
   f_reactable(
   groupBy = c('MODALITY'),
   pagination=FALSE
@@ -305,6 +449,7 @@ df_pacs %>%
 ```{r}
 df_pacs %>%
   filter(SALUS_CENTER == '광주') %>%
+  select(-SALUS_CENTER,-"검사구분(MODALITY)",-"검사 유형") %>%
   f_reactable(
   groupBy = c('MODALITY'),
   pagination=FALSE
