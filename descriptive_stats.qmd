@@ -194,7 +194,6 @@ df %>% select(SALUS_CENTER2, Ratio_MF, N, SEX_M, SEX_F) %>%
 ### 연도별
 
 ```{r}
-#| fig-height: 6
 df <- PID$TABLE_N_YEAR %>%
   pivot_longer(cols = c(SEX_M, SEX_F), names_to = "SEX", values_to = "COUNT")
 

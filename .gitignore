@@ -1,1 +1,36 @@
+# Quarto output files
+/_site/
 /.quarto/
+/*_files/
+/*.html
+/*.pdf
+
+# R-specific files
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor-specific files
+.vscode/
+.idea/
+
+# Data files (if you don't want to track these)
+*.csv
+*.xlsx
+*.rds
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Log files
+*.log
+
+# Other specific files you want to ignore
+# example.qmd
