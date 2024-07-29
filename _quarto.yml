@@ -9,7 +9,7 @@ format:
 
 website:
   title: "SALUS DASHBOARD"
-  url: https://salus.town
+  #url: https://www.salus.town
   navbar:
     background: primary
     search: true

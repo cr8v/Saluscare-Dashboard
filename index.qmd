@@ -27,8 +27,7 @@ PID <- readRDS("/home/rstudio/Data/object/PID.rds")
 list(
   icon = "file-person-fill",
   color = "danger",
-  value = format(nrow(PID$PID_ONLY), big.mark = ",", scientific = FALSE),
-  value_suffix = "명"
+  value = format(nrow(PID$PID_ONLY), big.mark = ",", scientific = FALSE)
 )
 ```
 
@@ -42,4 +41,42 @@ list(
   value = format(sum(PID$TABLE_N_YEAR$N), big.mark = ",", scientific = FALSE)
 )
 ```
+
+
+# Image
+
+## Row
+```{r}
+list_chestpa <- fread("/home/rstudio/Data/images/list_chestpa_240620.txt", header = FALSE, sep = ",")$V1
+list_mammo <- fread("/home/rstudio/Data/images/list_mammo_240620.txt", header = FALSE, sep = ",")$V1
+
+list_chestpa_check <- list_chestpa[!grepl(".dcm",list_chestpa)]; list_chestpa <- list_chestpa[grepl(".dcm",list_chestpa)]
+list_mammo_check <- list_mammo[!grepl(".dcm",list_mammo)]; list_mammo <- list_mammo[grepl(".dcm",list_mammo)]
+
+list_chestpa <- unique(list_chestpa); list_mammo <- unique(list_mammo)
+```
+
+### Column
+```{r valuebox-3}
+#| content: valuebox
+#| title: "ChestPA"
+
+list(
+  icon = "file-person-fill",
+  color = "primary",
+  value = format(length(list_chestpa), big.mark = ",", scientific = FALSE)
+)
+```
+
+### Column
+```{r valuebox-4}
+#| content: valuebox
+#| title: "Mammo"
+list(
+  icon = "bar-chart",
+  color = "success",
+  value = format(length(list_mammo), big.mark = ",", scientific = FALSE)
+)
+```
+
 
