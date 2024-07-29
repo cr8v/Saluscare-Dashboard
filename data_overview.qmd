@@ -1,3 +1,4 @@
+
 ---
 format: dashboard
 ---
@@ -30,17 +31,18 @@ df_layout <- list_column$layout
 df_layout %>% 
   select(COLUMN, 비고, AINQ:RSLT, starts_with("N_")) %>% 
   mutate(COLUMN = gsub("\\(.*\\)","",COLUMN)) %>%
-  f_reactable(columns = list(
-    COLUMN = colDef(name = "Column", style = f_style_bold),
-    비고   = colDef(name = "비고"),
-    AINQ   = colDef(name = "AINQ"),
-    JUDD   = colDef(name = "JUDD"),
-    RSLT   = colDef(name = "RSLT"),
-    N_ALL  = colDef(style = f_style1),
-    N_AINQ = colDef(style = f_style2),
-    N_JUDD = colDef(style = f_style2),
-    N_RSLT = colDef(style = f_style2)
-  )
+  f_reactable(
+    columns = list(COLUMN = colDef(name = "Column", style = f_style_bold),
+                   비고   = colDef(name = "비고"),
+                   AINQ   = colDef(name = "AINQ"),
+                   JUDD   = colDef(name = "JUDD"),
+                   RSLT   = colDef(name = "RSLT"),
+                   N_ALL  = colDef(style = f_style1),
+                   N_AINQ = colDef(style = f_style2),
+                   N_JUDD = colDef(style = f_style2),
+                   N_RSLT = colDef(style = f_style2)
+  ),
+  pagination=FALSE
 )
 ```
 
@@ -224,23 +226,91 @@ df_pacs %>%
 
 ## CENTER
 
+```{r}
+df_pacs <- df_pacs %>%
+  mutate(MODALITY = case_when(`검사 유형`!=`검사구분(MODALITY)` ~ paste0(`검사 유형`," (",`검사구분(MODALITY)`,")"),
+                              TRUE ~ .$`검사 유형`))
+```
+
 ::: {.panel-tabset}
 
-```{r}
-centers <- df_pacs %>% 
-  count(SALUS_CENTER, sort = TRUE) %>% 
-  pull(SALUS_CENTER)
+### 본원
 
-for(center in centers) {
-  cat(paste0("### ", center, "\n\n"))
-  df_pacs %>% 
-    filter(SALUS_CENTER == center) %>%
-    head(10) %>%
-    reactable()
-  
-  cat("\n\n")
-}
+```{r}
+df_pacs %>%
+  filter(SALUS_CENTER == '본원') %>%
+  f_reactable(
+  groupBy = c('MODALITY'),
+  pagination=FALSE
+  )
 ```
+
+### 여의도
+
+```{r}
+df_pacs %>%
+  filter(SALUS_CENTER == '여의도') %>%
+  f_reactable(
+  groupBy = c('MODALITY'),
+  pagination=FALSE
+  )
+```
+
+### 강남
+
+```{r}
+df_pacs %>%
+  filter(SALUS_CENTER == '강남') %>%
+  f_reactable(
+  groupBy = c('MODALITY'),
+  pagination=FALSE
+  )
+```
+
+### 수원
+
+```{r}
+df_pacs %>%
+  filter(SALUS_CENTER == '수원') %>%
+  f_reactable(
+  groupBy = c('MODALITY'),
+  pagination=FALSE
+  )
+```
+
+### 대구
+
+```{r}
+df_pacs %>%
+  filter(SALUS_CENTER == '대구') %>%
+  f_reactable(
+  groupBy = c('MODALITY'),
+  pagination=FALSE
+  )
+```
+
+### 부산
+
+```{r}
+df_pacs %>%
+  filter(SALUS_CENTER == '부산') %>%
+  f_reactable(
+  groupBy = c('MODALITY'),
+  pagination=FALSE
+  )
+```
+
+### 광주
+
+```{r}
+df_pacs %>%
+  filter(SALUS_CENTER == '광주') %>%
+  f_reactable(
+  groupBy = c('MODALITY'),
+  pagination=FALSE
+  )
+```
+
 
 
 :::
