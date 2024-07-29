@@ -45,3 +45,77 @@ df_layout %>%
 ```
 
 :::
+
+# PACS
+
+```{r data-2, include=FALSE}
+df_pacs <- read_csv("/home/rstudio/Data/meta/240729_PACS 비정형 데이터 보유 현황_살루스케어.csv")
+#status_PACS <- readRDS("/home/rstudio/Data/object/status_PACS.rds")
+```
+
+::: {.panel-tabset}
+
+## MODALITY
+
+```{r}
+modalities <- df_pacs %>% 
+  count(`검사구분(MODALITY)`, sort = TRUE) %>% 
+  pull(`검사구분(MODALITY)`)
+```
+
+::: {.panel-tabset}
+
+### `r modalities[1]`
+```{r}
+df_pacs %>% 
+  filter(`검사구분(MODALITY)` == modalities[1]) %>%
+  reactable()
+```
+
+### `r modalities[2]`
+```{r}
+df_pacs %>% 
+  filter(`검사구분(MODALITY)` == modalities[2]) %>%
+  reactable()
+```
+
+### `r modalities[3]`
+```{r}
+df_pacs %>% 
+  filter(`검사구분(MODALITY)` == modalities[3]) %>%
+  reactable()
+```
+
+### `r modalities[4]`
+```{r}
+df_pacs %>% 
+  filter(`검사구분(MODALITY)` == modalities[4]) %>%
+  reactable()
+```
+:::
+
+## CENTER
+
+::: {.panel-tabset}
+
+```{r}
+centers <- df_pacs %>% 
+  count(SALUS_CENTER, sort = TRUE) %>% 
+  pull(SALUS_CENTER)
+
+for(center in centers) {
+  cat(paste0("### ", center, "\n\n"))
+  df_pacs %>% 
+    filter(SALUS_CENTER == center) %>%
+    head(10) %>%
+    reactable()
+  
+  cat("\n\n")
+}
+```
+
+
+:::
+
+:::
+
