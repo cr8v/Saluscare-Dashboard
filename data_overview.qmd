@@ -65,33 +65,161 @@ modalities <- df_pacs %>%
 
 ::: {.panel-tabset}
 
-### `r modalities[1]`
+
+### 복부 외 초음파 (US)
+
 ```{r}
-df_pacs %>% 
-  filter(`검사구분(MODALITY)` == modalities[1]) %>%
-  reactable()
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'US') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
 ```
 
-### `r modalities[2]`
+### CT
+
 ```{r}
-df_pacs %>% 
-  filter(`검사구분(MODALITY)` == modalities[2]) %>%
-  reactable()
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'CT') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
 ```
 
-### `r modalities[3]`
+### MRI/MRA (MR)
+
 ```{r}
-df_pacs %>% 
-  filter(`검사구분(MODALITY)` == modalities[3]) %>%
-  reactable()
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'MR') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
 ```
 
-### `r modalities[4]`
+### 유방촬영 외 X-ray (DR)
+
 ```{r}
-df_pacs %>% 
-  filter(`검사구분(MODALITY)` == modalities[4]) %>%
-  reactable()
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'DR') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
 ```
+
+### 내시경 (ES)
+
+```{r}
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'ES') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
+```
+
+### 골밀도 (OT)
+
+```{r}
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'OT') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
+```
+
+### PET CT (PT)
+
+```{r}
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'PT') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
+```
+
+### 심전도 (EK)
+
+```{r}
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'EK') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
+```
+
+### 유방촬영 (MG)
+
+```{r}
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'MG') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
+```
+
+### 위장조영 (RF)
+
+```{r}
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'RF') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
+```
+
+### 동맥경화도 (VS)
+
+```{r}
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'VS') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
+```
+
+### 안저안압 (XC)
+
+```{r}
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'XC') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
+```
+
+### EKG
+
+```{r}
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'EKG') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
+```
+
+### OP
+
+```{r}
+df_pacs %>%
+  filter(`검사구분(MODALITY)` == 'OP') %>%
+  f_reactable(
+    groupBy = c("검사명１"),
+    pagination=FALSE
+  )
+```
+
 :::
 
 ## CENTER
