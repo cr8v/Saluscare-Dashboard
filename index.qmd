@@ -1,5 +1,7 @@
 ---
-format: dashboard
+format:
+  dashboard:
+    scrolling: true
 ---
 
 <script>
@@ -16,7 +18,6 @@ source("library.R")
 
 ```{r data}
 PID <- readRDS("/home/rstudio/Data/object/PID.rds")
-
 ```
 
 ## Row
@@ -47,36 +48,153 @@ list(
 
 ## Row
 ```{r}
-list_chestpa <- fread("/home/rstudio/Data/images/list_chestpa_240620.txt", header = FALSE, sep = ",")$V1
-list_mammo <- fread("/home/rstudio/Data/images/list_mammo_240620.txt", header = FALSE, sep = ",")$V1
-
-list_chestpa_check <- list_chestpa[!grepl(".dcm",list_chestpa)]; list_chestpa <- list_chestpa[grepl(".dcm",list_chestpa)]
-list_mammo_check <- list_mammo[!grepl(".dcm",list_mammo)]; list_mammo <- list_mammo[grepl(".dcm",list_mammo)]
-
-list_chestpa <- unique(list_chestpa); list_mammo <- unique(list_mammo)
+list_dcm <- readRDS("/home/rstudio/Data/object/list_dcm.rds")
 ```
 
 ### Column
 ```{r valuebox-3}
 #| content: valuebox
-#| title: "ChestPA"
+#| title: "ChestPA (개)"
+#| height: 1
 
 list(
   icon = "file-person-fill",
   color = "primary",
-  value = format(length(list_chestpa), big.mark = ",", scientific = FALSE)
+  value = format(nrow(list_dcm$chestpa$dcm), big.mark = ",", scientific = FALSE)
 )
 ```
 
 ### Column
 ```{r valuebox-4}
 #| content: valuebox
-#| title: "Mammo"
+#| title: "Mammo (개)"
+#| height: 1
 list(
   icon = "bar-chart",
   color = "success",
-  value = format(length(list_mammo), big.mark = ",", scientific = FALSE)
+  value = format(nrow(list_dcm$mammo$dcm), big.mark = ",", scientific = FALSE)
 )
 ```
 
 
+
+## Row
+
+### Column
+
+::: {.panel-tabset}
+
+#### ChestPA
+
+::: {.panel-tabset}
+
+##### 센터
+```{r}
+list_dcm$chestpa$count[[1]] %>%
+  f_reactable()
+```
+
+##### 연도
+
+```{r}
+list_dcm$chestpa$count[[2]] %>%
+  f_reactable()
+```
+
+##### 센터x연도
+```{r}
+list_dcm$chestpa$count[[3]] %>%
+  f_reactable()
+```
+
+##### 날짜_월
+```{r}
+list_dcm$chestpa$count[[4]] %>%
+  f_reactable()
+```
+
+##### 날짜_연도_월
+
+```{r}
+list_dcm$chestpa$count[[5]] %>%
+  f_reactable()
+```
+
+##### Modality
+
+```{r}
+list_dcm$chestpa$count[[6]] %>%
+  f_reactable()
+```
+
+##### UID x Modality
+
+```{r}
+list_dcm$chestpa$count[[9]] %>%
+  f_reactable()
+```
+
+
+:::
+
+:::
+
+:::
+
+### Column
+
+::: {.panel-tabset}
+
+#### Mammo
+
+::: {.panel-tabset}
+
+##### 센터
+```{r}
+list_dcm$mammo$count[[1]] %>%
+  f_reactable()
+```
+
+##### 연도
+
+```{r}
+list_dcm$mammo$count[[2]] %>%
+  f_reactable()
+```
+
+##### 센터x연도
+```{r}
+list_dcm$mammo$count[[3]] %>%
+  f_reactable()
+```
+
+##### 날짜_월
+```{r}
+list_dcm$mammo$count[[4]] %>%
+  f_reactable()
+```
+
+##### 날짜_연도_월
+
+```{r}
+list_dcm$mammo$count[[5]] %>%
+  f_reactable()
+```
+
+##### Modality
+
+```{r}
+list_dcm$mammo$count[[6]] %>%
+  f_reactable()
+```
+
+##### UID x Modality
+
+```{r}
+list_dcm$mammo$count[[9]] %>%
+  f_reactable()
+```
+
+:::
+
+:::

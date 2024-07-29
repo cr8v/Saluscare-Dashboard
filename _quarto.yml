@@ -6,6 +6,13 @@ format:
   dashboard:
     theme: cosmo
     css: styles.css
+    include-in-header:
+      text: |
+        <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+          document.getElementById('last-updated').textContent = new Date().toLocaleString();
+        });
+        </script>
 
 website:
   title: "SALUS DASHBOARD"
@@ -59,4 +66,4 @@ website:
 
   page-footer:
     left: "Copyright 2024, Saluscare"
-
+    right: "Last updated: <span id='last-updated'></span>"

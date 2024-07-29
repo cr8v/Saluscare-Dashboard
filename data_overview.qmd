@@ -120,8 +120,8 @@ df_pacs <- read_csv("/home/rstudio/Data/meta/240729_PACS 비정혀�
 
 df_pacs <- df_pacs %>%
   mutate(MODALITY = case_when(`검사 유형`!=`검사구분(MODALITY)` ~ paste0(`검사 유형`," (",`검사구분(MODALITY)`,")"),
-                              TRUE ~ .$`검사 유형`))
-
+                              TRUE ~ .$`검사 유형`),
+         `용량(GB)` = as.integer(`용량(GB)`))
 ```
 
 ::: {.panel-tabset}
@@ -137,7 +137,9 @@ df_pacs %>%
   select(-"검사구분(MODALITY)",-"검사 유형") %>%
   f_reactable(
     columns = list(
-      SALUS_CENTER = colDef(aggregate = "unique")
+      SALUS_CENTER = colDef(aggregate = "unique"),
+      `건 수` = colDef(aggregate = "sum"),
+      `용량(GB)` = colDef(aggregate = "sum")
     ),
     groupBy = c("MODALITY","검사명１"),
     pagination=FALSE,
