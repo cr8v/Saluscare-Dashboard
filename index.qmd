@@ -1,5 +1,7 @@
 ---
-format: dashboard
+format:
+  dashboard:
+    scrolling: true
 ---
 
 <script>
@@ -89,68 +91,55 @@ list(
 
 ##### 센터
 ```{r}
-list_dcm$chestpa$count[[1]] %>%
+full_join(list_dcm$chestpa$count$SALUS_CENTER,
+          list_dcm$chestpa$count$SALUS_CENTER_YEAR %>%
+            pivot_wider(
+            names_from = SALUS_YEAR,
+            values_from = n),
+          by = join_by(SALUS_CENTER)) %>%
+  bind_rows(summarise(., across(where(is.numeric), sum),
+                      SALUS_CENTER = "Total")) %>% rename(Total = n) %>%
   f_reactable(
     pagination = FALSE,
-    searchable = FALSE
-  )
-```
-
-##### 연도
-
-```{r}
-list_dcm$chestpa$count[[2]] %>%
-  f_reactable(
-    pagination = FALSE,
-    searchable = FALSE
-  )
-```
-
-##### 센터x연도
-```{r}
-list_dcm$chestpa$count[[3]] %>%
-  f_reactable(
-    pagination = FALSE,
-    searchable = FALSE
-  )
-```
-
-##### 날짜_월
-```{r}
-list_dcm$chestpa$count[[4]] %>%
-  f_reactable(
-    pagination = FALSE,
-    searchable = FALSE
+    searchable = FALSE,
+    filterable = FALSE
   )
 ```
 
 ##### 날짜_연도_월
 
 ```{r}
-list_dcm$chestpa$count[[5]] %>%
+list_dcm$chestpa$count$SALUS_YEAR_MONTH %>% arrange(SALUS_YEAR) %>%
+  pivot_wider(
+            names_from = SALUS_YEAR,
+            values_from = n) %>%
+  arrange(SALUS_MONTH) %>%
   f_reactable(
     pagination = FALSE,
-    searchable = FALSE
+    searchable = FALSE,
+    filterable = FALSE
   )
 ```
 
 ##### Modality
 
 ```{r}
-list_dcm$chestpa$count[[6]] %>%
-  f_reactable(
-    pagination = FALSE,
-    searchable = FALSE
+list_dcm$chestpa$count$SALUS_MODALITY %>% left_join(
+  list_dcm$chestpa$count$SALUS_UID_MODALITY %>% arrange(n) %>%
+  pivot_wider(
+    names_from = n,
+    values_from = nn
   )
-```
-
-##### UID x Modality
-
-```{r}
-list_dcm$chestpa$count[[9]] %>%
+) %>%
   f_reactable(
+    columns = list(
+      SALUS_MODALITY = colDef(style=f_style_sticky),
+      `검사 유형` = colDef(style=f_style_bold),
+      n = colDef(style=f_style_bold)
+    ),
     pagination = FALSE,
-    searchable = FALSE
+    searchable = FALSE,
+    filterable = FALSE
   )
 ```
 
@@ -169,48 +158,58 @@ list_dcm$chestpa$count[[9]] %>%
 
 ##### 센터
 ```{r}
-list_dcm$mammo$count[[1]] %>%
-  f_reactable()
+full_join(list_dcm$mammo$count$SALUS_CENTER,
+          list_dcm$mammo$count$SALUS_CENTER_YEAR %>%
+            pivot_wider(
+            names_from = SALUS_YEAR,
+            values_from = n),
+          by = join_by(SALUS_CENTER)) %>%
+  bind_rows(summarise(., across(where(is.numeric), sum),
+                      SALUS_CENTER = "Total")) %>% rename(Total = n) %>%
+  f_reactable(
+    pagination = FALSE,
+    searchable = FALSE,
+    filterable = FALSE
+  )
 ```
 
-##### 연도
 
-```{r}
-list_dcm$mammo$count[[2]] %>%
-  f_reactable()
-```
-
-##### 센터x연도
-```{r}
-list_dcm$mammo$count[[3]] %>%
-  f_reactable()
-```
-
-##### 날짜_월
-```{r}
-list_dcm$mammo$count[[4]] %>%
-  f_reactable()
-```
 
 ##### 날짜_연도_월
 
 ```{r}
-list_dcm$mammo$count[[5]] %>%
-  f_reactable()
+list_dcm$mammo$count$SALUS_YEAR_MONTH %>% arrange(SALUS_YEAR) %>%
+  pivot_wider(
+            names_from = SALUS_YEAR,
+            values_from = n) %>%
+  arrange(SALUS_MONTH) %>%
+  f_reactable(
+    pagination = FALSE,
+    searchable = FALSE,
+    filterable = FALSE
+  )
 ```
 
 ##### Modality
 
 ```{r}
-list_dcm$mammo$count[[6]] %>%
-  f_reactable()
-```
-
-##### UID x Modality
-
-```{r}
-list_dcm$mammo$count[[9]] %>%
-  f_reactable()
+list_dcm$mammo$count$SALUS_MODALITY %>% left_join(
+  list_dcm$mammo$count$SALUS_UID_MODALITY %>% arrange(n) %>%
+  pivot_wider(
+    names_from = n,
+    values_from = nn
+  )
+) %>%
+  f_reactable(
+    columns = list(
+      SALUS_MODALITY = colDef(style=f_style_sticky),
+      `검사 유형` = colDef(style=f_style_bold),
+      n = colDef(style=f_style_bold)
+    ),
+    pagination = FALSE,
+    searchable = FALSE,
+    filterable = FALSE
+  )
 ```
 
 :::

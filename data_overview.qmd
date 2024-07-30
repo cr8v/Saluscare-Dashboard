@@ -1,6 +1,7 @@
-
 ---
-format: dashboard
+format:
+  dashboard:
+    scrolling: true
 ---
 
 <script>
