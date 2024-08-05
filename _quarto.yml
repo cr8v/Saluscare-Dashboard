@@ -33,9 +33,9 @@ website:
       - text: Descriptive Stats
         file: descriptive_stats.qmd
         id: "nav-descriptive-stats"
-      - text: JUDD
-        file: judd.qmd
-        id: "nav-judd"
+      - text: Descriptive Stats 2
+        file: descriptive_stats_2.qmd
+        id: "nav-descriptive-stats2"
       - text: Trend Analysis
         file: trend_analysis.qmd
         id: "nav-trend-analysis"
