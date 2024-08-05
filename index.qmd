@@ -11,24 +11,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
 </script>
 
 ```{r setup, include=FALSE}
-source("library.R")
+source("script/library.R")
+RESULT <- readRDS("/home/rstudio/Website/save/index.rds")
 ```
 
 # Status
 
-```{r data}
-PID <- readRDS("/home/rstudio/Data/object/PID.rds")
-```
+## Row
 
-## Row {height=30%}
 ### Column
 ```{r valuebox-1}
 #| content: valuebox
 #| title: "총 대상자수 (명)"
+
 list(
   icon = "file-person-fill",
   color = "danger",
-  value = format(nrow(PID$PID_ONLY), big.mark = ",", scientific = FALSE)
+  value = format(RESULT$VALUEBOX[1], big.mark = ",", scientific = FALSE)
 )
 ```
 
@@ -36,14 +35,91 @@ list(
 ```{r valuebox-2}
 #| content: valuebox
 #| title: "누적검진 (건)"
+
 list(
   icon = "bar-chart",
   color = "secondary",
-  value = format(sum(PID$TABLE_N_YEAR$N), big.mark = ",", scientific = FALSE)
+  value = format(RESULT$VALUEBOX[2], big.mark = ",", scientific = FALSE)
 )
 ```
 
-## Row {height=70%}
+## Row
+
+::: {.panel-tabset}
+
+### 연도
+
+```{r}
+RESULT$TABLE$COUNT$YEAR %>% 
+  mutate(COUNT_YEAR = paste0(COUNT_YEAR,"개년")) %>%
+  f_reactable(
+    columns = list(
+      COUNT_YEAR = colDef(name = "방문횟수", style = f_style_sticky),
+      `%` = colDef(format = colFormat(digits = 1, percent = TRUE)),
+      `Cumulative N` = colDef(name = "누적 N"),
+      `Cumulative %` = colDef(name = "누적 %", format = colFormat(digits = 1, percent = TRUE))
+    ),
+    filterable = FALSE, searchable = FALSE)
+```
+
+### 센터
+
+```{r}
+RESULT$TABLE$COUNT$CENTER %>% 
+  mutate(COUNT_CENTER = paste0(COUNT_CENTER,"개")) %>%
+  f_reactable(
+    columns = list(
+      COUNT_CENTER = colDef(name = "센터갯수", style = f_style_sticky),
+      `%` = colDef(format = colFormat(digits = 1, percent = TRUE)),
+      `Cumulative N` = colDef(name = "누적 N"),
+      `Cumulative %` = colDef(name = "누적 %", format = colFormat(digits = 1, percent = TRUE))
+    ),
+    filterable = FALSE, searchable = FALSE)
+```
+
+### 예약번호
+
+```{r}
+RESULT$TABLE$COUNT$RGSTNO %>%
+  f_reactable(
+    columns = list(
+      MEAN_RGSTNO = colDef(name = "예약번호 갯수 (평균)", style = f_style_sticky),
+      `%` = colDef(format = colFormat(digits = 1, percent = TRUE)),
+      `Cumulative N` = colDef(name = "누적 N"),
+      `Cumulative %` = colDef(name = "누적 %", format = colFormat(digits = 1, percent = TRUE))
+    ),
+    filterable = FALSE, searchable = FALSE, pagination = FALSE)
+```
+
+:::
+
+## Row
+
+::: {.panel-tabset}
+
+### (예) 연도
+
+```{r}
+RESULT$TABLE$EXAMPLE$YEAR  %>% 
+  select(PID_ANONY, starts_with("COUNT"), starts_with("CENTER")) %>%
+  f_reactable(
+  )
+```
+
+### (예) 예약번호
+
+```{r}
+RESULT$TABLE$EXAMPLE$RGSTNO  %>% select(PID_ANONY, MEAN_RGSTNO, COUNT_RGSTNO, everything()) %>%
+  f_reactable()
+```
+
+### (예) 센터
+
+```{r}
+RESULT$TABLE$EXAMPLE$CENTER  %>% 
+  f_reactable()
+```
+:::
 
 # Image
 
@@ -100,13 +176,16 @@ full_join(list_dcm$chestpa$count$SALUS_CENTER,
   bind_rows(summarise(., across(where(is.numeric), sum),
                       SALUS_CENTER = "Total")) %>% rename(Total = n) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(name = "센터", style = f_style_sticky)
+    ),
     pagination = FALSE,
     searchable = FALSE,
     filterable = FALSE
   )
 ```
 
-##### 날짜_연도_월
+##### 월별
 
 ```{r}
 list_dcm$chestpa$count$SALUS_YEAR_MONTH %>% arrange(SALUS_YEAR) %>%
@@ -115,6 +194,9 @@ list_dcm$chestpa$count$SALUS_YEAR_MONTH %>% arrange(SALUS_YEAR) %>%
             values_from = n) %>%
   arrange(SALUS_MONTH) %>%
   f_reactable(
+    columns = list(
+      SALUS_MONTH = colDef(name = "월별", style = f_style_sticky)
+    ),
     pagination = FALSE,
     searchable = FALSE,
     filterable = FALSE
@@ -133,9 +215,9 @@ list_dcm$chestpa$count$SALUS_MODALITY %>% left_join(
 ) %>%
   f_reactable(
     columns = list(
-      SALUS_MODALITY = colDef(style=f_style_sticky),
+      SALUS_MODALITY = colDef(name = "검사 종류", style=f_style_bold),
       `검사 유형` = colDef(style=f_style_bold),
-      n = colDef(style=f_style_bold)
+      n = colDef(style=f_style_sticky)
     ),
     pagination = FALSE,
     searchable = FALSE,
@@ -167,15 +249,16 @@ full_join(list_dcm$mammo$count$SALUS_CENTER,
   bind_rows(summarise(., across(where(is.numeric), sum),
                       SALUS_CENTER = "Total")) %>% rename(Total = n) %>%
   f_reactable(
+    columns = list(
+      SALUS_CENTER = colDef(name = "센터", style = f_style_sticky)
+    ),
     pagination = FALSE,
     searchable = FALSE,
     filterable = FALSE
   )
 ```
 
-
-
-##### 날짜_연도_월
+##### 월별
 
 ```{r}
 list_dcm$mammo$count$SALUS_YEAR_MONTH %>% arrange(SALUS_YEAR) %>%
@@ -184,6 +267,9 @@ list_dcm$mammo$count$SALUS_YEAR_MONTH %>% arrange(SALUS_YEAR) %>%
             values_from = n) %>%
   arrange(SALUS_MONTH) %>%
   f_reactable(
+    columns = list(
+      SALUS_MONTH = colDef(name = "월별", style = f_style_sticky)
+    ),
     pagination = FALSE,
     searchable = FALSE,
     filterable = FALSE
@@ -202,9 +288,9 @@ list_dcm$mammo$count$SALUS_MODALITY %>% left_join(
 ) %>%
   f_reactable(
     columns = list(
-      SALUS_MODALITY = colDef(style=f_style_sticky),
+      SALUS_MODALITY = colDef(name = "검사 종류", style=f_style_bold),
       `검사 유형` = colDef(style=f_style_bold),
-      n = colDef(style=f_style_bold)
+      n = colDef(style=f_style_sticky)
     ),
     pagination = FALSE,
     searchable = FALSE,

@@ -1,0 +1,144 @@
+---
+format:
+  dashboard:
+    scrolling: true
+---
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+  document.getElementById('nav-judd').classList.add('active');
+});
+</script>
+
+
+```{r setup, include=FALSE}
+source("script/library.R")
+library(skimr)
+```
+
+```{r}
+df_ainq <- read_parquet("/home/rstudio/Data/object/df_ainq_200000.parquet")
+df_judd <- read_parquet("/home/rstudio/Data/object/df_judd_200000.parquet")
+df_rslt <- read_parquet("/home/rstudio/Data/object/df_rslt_200000.parquet")
+df_codebook <- readRDS("/home/rstudio/Data/object/list_column.rds")$codebook
+```
+
+# JUDD
+
+```{r}
+df_judd %>% count(HEALEXAMDETLFLAG) %>%
+  rename(N = n) %>%
+  arrange(desc(N)) %>%
+  mutate(`%` = N/nrow(df_judd)) %>%
+  left_join(df_codebook$HEALEXAMDETLFLAG, by = join_by(HEALEXAMDETLFLAG)) %>% select(HEALEXAMDETLFLAG, CDNM, N, `%`) %>%
+  f_reactable(
+    columns = list(
+      HEALEXAMDETLFLAG = colDef(style = f_style_bold),
+      CDNM = colDef(style = f_style_sticky),
+      `%` = colDef(format = colFormat(digits = 1, percent = TRUE))
+    ),
+  pagination = FALSE
+  )
+```
+
+```{r}
+df_judd %>% count(TESTCD) %>%
+  rename(N = n) %>%
+  arrange(desc(N)) %>%
+  mutate(`%` = N/nrow(df_judd)) %>%
+  left_join(df_codebook$TESTCD, by = join_by(TESTCD)) %>%
+  f_reactable(
+  columns = list(
+    TESTCD = colDef(style = f_style_sticky),
+    `%` = colDef(format = colFormat(digits = 1, percent = TRUE))
+  )
+  )
+```
+
+```{r}
+df_judd %>% count(JUDGCD, JUDGNM) %>%
+  rename(N = n) %>%
+  arrange(desc(N)) %>%
+  left_join(df_codebook$JUDGCD, by = join_by(JUDGCD)) %>%
+  f_reactable()
+```
+
+```{r}
+df_judd %>% count(JUDGRSLTCD) %>%
+  rename(N = n) %>%
+  arrange(desc(N)) %>%
+  f_reactable()
+```
+
+```{r}
+df_skim <- skim(df_judd)
+df_skim %>% as.data.frame() %>% 
+  select(skim_variable, character.empty, character.n_unique, everything()) %>%
+  f_reactable(
+    defaultSorted = c("character.n_unique"),
+    defaultSortOrder = "desc",
+    pagination=FALSE
+  )
+```
+
+# AINQ
+
+```{r}
+df_ainq %>% count(APPYEAR) %>%
+  f_reactable()
+```
+
+```{r}
+df_ainq %>% count(INQRFLAG) %>%
+  f_reactable()
+```
+
+```{r}
+df_ainq %>% count(INQRCD) %>%
+  f_reactable()
+```
+
+```{r}
+df_ainq %>% count(INQRRSLT) %>%
+  f_reactable()
+```
+
+```{r}
+df_skim <- skim(df_ainq)
+df_skim %>% as.data.frame() %>% 
+  select(skim_variable, character.empty, character.n_unique, everything()) %>%
+  f_reactable(
+    defaultSorted = c("character.n_unique"),
+    defaultSortOrder = "desc",
+    pagination=FALSE
+  )
+```
+
+
+# RSLT
+
+```{r}
+df_rslt %>% count(HEALEXAMFLAG) %>%
+  f_reactable()
+```
+
+```{r}
+df_rslt %>% count(PRCPCD) %>%
+  f_reactable()
+```
+
+```{r}
+df_rslt %>% count(TESTCD) %>%
+  f_reactable()
+```
+
+```{r}
+df_skim <- skim(df_rslt)
+df_skim %>% as.data.frame() %>% 
+  select(skim_variable, character.empty, character.n_unique, everything()) %>%
+  f_reactable(
+    defaultSorted = c("character.n_unique"),
+    defaultSortOrder = "desc",
+    pagination=FALSE
+  )
+```
